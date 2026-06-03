@@ -1,0 +1,48 @@
+# Secrets & environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json
+secrets.yaml
+secrets.yml
+credentials.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+.Spotlight-V100
+.Trashes
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Docs generators
+_site/
+.docusaurus/
+.next/
+out/
+dist/
+build/
+.cache/
+.temp/
+
+# Node (if using a static site generator)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Python (if any scripts)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Logs
+*.log
