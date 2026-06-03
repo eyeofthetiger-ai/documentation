@@ -1,6 +1,6 @@
 # EyeOfTheTiger Documentation
 
-Welcome to the official documentation for **EyeOfTheTiger** — a Raspberry Pi Zero 2 W that turns a camera into an intelligent, network-accessible device built for agentic AI workflows.
+Welcome to the official documentation for **EyeOfTheTiger** — an AI-ready camera that connects directly to your models out of the box.
 
 EyeOfTheTiger runs an HTTP camera server and a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server, letting AI assistants like Claude capture images, describe scenes, detect motion, and trigger actions — all from your local network.
 
@@ -27,8 +27,6 @@ You can verify it's running by visiting:
 ```text
 http://eyeofthetiger.local/docs
 ```
-
-For device setup instructions, see the [webcam-server-rp](https://github.com/eyeofthetiger-ai/webcam-server-rp) repository.
 
 ## Examples
 
