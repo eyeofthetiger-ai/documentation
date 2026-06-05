@@ -64,19 +64,21 @@ curl https://portal-598626659536.europe-west2.run.app/api/v1/cameras \
 }
 ```
 
-### Capture an image
+### Get an image
 
-The request blocks until the image is ready (up to ~45 seconds) and returns the
-JPEG bytes directly.
+Triggers a capture and returns the JPEG bytes directly. Blocks until the image
+is ready (up to ~45 seconds). The camera must be online.
 
 ```bash
-curl -X POST \
-  https://portal-598626659536.europe-west2.run.app/api/v1/cameras/cam_a1b2c3d4e5/capture \
+curl https://portal-598626659536.europe-west2.run.app/api/v1/cameras/cam_a1b2c3d4e5/image \
   -H "x-api-key: YOUR_API_KEY" \
+  --fail-with-body \
   -o capture.jpg
 ```
 
-Open `capture.jpg` to see the result.
+`--fail-with-body` makes curl exit with an error if the response is not 2xx
+(e.g. camera offline, timeout), so you don't silently save a JSON error as a
+`.jpg`. Open `capture.jpg` to see the result.
 
 ---
 
