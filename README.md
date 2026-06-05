@@ -8,11 +8,12 @@ EyeOfTheTiger runs an HTTP camera server and a [Model Context Protocol (MCP)](ht
 
 | Guide | Description |
 |---|---|
-| [Integrate with Anthropic](how-to/integrate-with-anthropic.md) | Connect EyeOfTheTiger to Claude via Claude Code or Claude Desktop |
-| [Integrate with OpenAI](how-to/integrate-with-openai.md) | Use EyeOfTheTiger with OpenAI models |
-| [Integrate with Google](how-to/integrate-with-google.md) | Connect to Google AI tools |
-| [Integrate with Ollama](how-to/integrate-with-ollama.md) | Run local models against your camera feed |
-| [Integrate with OpenClaw](how-to/integrate-with-openclaw.md) | Use EyeOfTheTiger through the OpenClaw platform |
+| [Connect to the Portal](connect-to-portal.md) | Link your camera to the cloud portal for remote access, REST API, and MCP |
+| [Integrate with Anthropic](integrate-with-anthropic.md) | Connect EyeOfTheTiger to Claude via Claude Code or Claude Desktop |
+| [Integrate with OpenAI](integrate-with-openai.md) | Use EyeOfTheTiger with OpenAI models |
+| [Integrate with Google](integrate-with-google.md) | Connect to Google AI tools |
+| [Integrate with Ollama](integrate-with-ollama.md) | Run local models against your camera feed |
+| [Integrate with OpenClaw](integrate-with-openclaw.md) | Use EyeOfTheTiger through the OpenClaw platform |
 
 ## Getting Started
 
