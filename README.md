@@ -1,34 +1,47 @@
 # EyeOfTheTiger Documentation
 
-Welcome to the official documentation for **EyeOfTheTiger** — an AI-ready camera that connects directly to your models out of the box.
+EyeOfTheTiger is an AI-ready camera that lets AI assistants capture images,
+describe scenes, detect motion, and trigger actions. There are two ways to use
+it, depending on how much control you want and where your AI agents run.
 
-EyeOfTheTiger runs an HTTP camera server and a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server, letting AI assistants like Claude capture images, describe scenes, detect motion, and trigger actions — all from your local network.
+---
 
-## What's Here
+## Local
 
-| Guide | Description |
-|---|---|
-| [Connect to the Portal](connect-to-portal.md) | Link your camera to the cloud portal for remote access, REST API, and MCP |
-| [Integrate with Anthropic](integrate-with-anthropic.md) | Connect EyeOfTheTiger to Claude via Claude Code or Claude Desktop |
-| [Integrate with OpenAI](integrate-with-openai.md) | Use EyeOfTheTiger with OpenAI models |
-| [Integrate with Google](integrate-with-google.md) | Connect to Google AI tools |
-| [Integrate with Ollama](integrate-with-ollama.md) | Run local models against your camera feed |
-| [Integrate with OpenClaw](integrate-with-openclaw.md) | Use EyeOfTheTiger through the OpenClaw platform |
+Your camera and your AI agent are on the same network. The agent talks directly
+to the camera over HTTP or MCP — no cloud, no middleman, no account required.
 
-## Getting Started
+**Pros**
+- Free forever — no subscription, no usage limits
+- Complete control over your data; images never leave your network
+- Works without an internet connection
+- Lower latency — direct LAN connection to the camera
 
-Before following any integration guide, make sure your EyeOfTheTiger device is set up and on your network. Once it is, the API and MCP server will be available at:
+**Cons**
+- Your agent must be on the same network as the camera (or connected via VPN)
+- No remote access out of the box
+- You manage your own infrastructure
 
-```text
-http://eyeofthetiger.local/
-```
+→ **[Local documentation](local/README.md)**
 
-You can verify it's running by visiting:
+---
 
-```text
-http://eyeofthetiger.local/docs
-```
+## Cloud
 
-## Examples
+Your camera connects outbound to the EyeOfTheTiger platform. Your AI agents
+connect to the platform from anywhere — no VPN, no port-forwarding, no local
+setup beyond the camera itself.
 
-Looking for ready-to-run projects built on EyeOfTheTiger? Check out the [examples](https://github.com/eyeofthetiger-ai/examples) repository, which includes projects like motion detection, daily timelapse, and person-spotted notifications.
+**Pros**
+- Access your camera from anywhere in the world
+- Works with any AI client that supports HTTP or MCP (Claude Desktop, Cursor, etc.)
+- No local agent infrastructure to manage
+- REST API and hosted MCP server included
+
+**Cons**
+- Requires an internet connection on the camera
+- Your plan includes free usage with your EyeOfTheTiger device, but continued
+  use beyond the free allowance requires a subscription
+- Images pass through the EyeOfTheTiger platform on the way to your agent
+
+→ **[Cloud documentation](cloud/README.md)**
