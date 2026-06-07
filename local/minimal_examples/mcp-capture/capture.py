@@ -8,7 +8,9 @@ from mcp.client.streamable_http import streamablehttp_client
 
 
 async def main():
-    async with streamablehttp_client("http://eyeofthetiger.local/mcp") as (read, write, _):
+    # Trailing slash matters: the device serves MCP at /mcp/ (a request to
+    # /mcp redirects, which the streamable-HTTP client won't follow → it hangs).
+    async with streamablehttp_client("http://eyeofthetiger.local/mcp/") as (read, write, _):
         async with ClientSession(read, write) as session:
             await session.initialize()
             result = await session.call_tool("take_snapshot", {})
