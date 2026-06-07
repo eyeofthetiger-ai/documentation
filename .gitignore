@@ -40,9 +40,25 @@ yarn-error.log*
 
 # Python (if any scripts)
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+.Python
+# virtual environments (any name, any depth)
 .venv/
 venv/
+env/
+ENV/
+.env/
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Generated outputs from the minimal examples
+**/minimal_examples/**/image.jpg
+**/minimal_examples/**/recording.mp4
 
 # Logs
 *.log

@@ -1,43 +1,28 @@
 # Minimal Examples — Local
 
-Smoke tests that exercise every endpoint of a **local** EyeOfTheTiger camera on
-your network. No account or API key needed — these talk straight to the device.
+One tiny script per operation, each saving its result into its own folder. They
+talk straight to the device on your network — no account or API key.
 
-The same five operations are available over HTTP and over MCP:
+| Folder | What it does |
+|---|---|
+| [`api-capture/`](api-capture/) | `capture.sh` → `GET /v1/image` → `image.jpg` |
+| [`api-record/`](api-record/) | `record.sh` → start/stop a clip → `recording.mp4` |
+| [`mcp-capture/`](mcp-capture/) | `capture.py` → MCP `take_snapshot` → `image.jpg` |
+| [`mcp-record/`](mcp-record/) | `record.py` → MCP `record_video` → `recording.mp4` |
 
-| | HTTP (device API) | MCP tool |
-|---|---|---|
-| Still image | `GET /v1/image` | `take_snapshot` |
-| Start recording | `POST /v1/start` | `record_video` |
-| Stop recording | `POST /v1/stop` | (handled by `record_video`) |
-| Download clip | `GET /v1/recording` | `get_recording` |
-| Live preview | `GET /v1/stream` | — |
+The device must be on your network at `http://eyeofthetiger.local`.
 
-## Prerequisites
-
-- An EyeOfTheTiger camera powered on and on the same network, reachable at
-  `http://eyeofthetiger.local` (or use its IP).
-
-## HTTP test (bash)
-
-Captures a still, records a short clip, and opens the live stream — opening
-each result so you can confirm it works.
-
+**Bash (API):**
 ```bash
-./test-endpoints.sh
-# against a different host / longer clip:
-BASE=http://192.168.1.50:8000/v1 RECORD_SECONDS=8 ./test-endpoints.sh
+cd api-capture && bash capture.sh
 ```
 
-## MCP test (python)
-
+**Python (MCP):**
 ```bash
+cd mcp-capture
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-python mcp_test.py
-# against a different host:
-DEVICE_URL=http://192.168.1.50:8000 python mcp_test.py
+python capture.py
 ```
 
-It calls `take_snapshot` (opens the image) and `record_video` (downloads and
-opens the clip).
+For a live view, open `http://eyeofthetiger.local/v1/stream` in a browser.
