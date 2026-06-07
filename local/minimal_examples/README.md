@@ -25,4 +25,8 @@ pip install -r requirements.txt
 python capture.py
 ```
 
-For a live view, open `http://eyeofthetiger.local/v1/stream` in a browser.
+For a live view, open `http://eyeofthetiger.local/v1/stream.mjpg` in a browser.
+Use the **`.mjpg`** URL for direct viewing — browsers key off the extension to
+render an MJPEG stream, so the extensionless `/v1/stream` alias shows blank on
+direct navigation (it's meant for programmatic use). Embedding in an
+`<img src="…/v1/stream.mjpg">` tag works anywhere too.
