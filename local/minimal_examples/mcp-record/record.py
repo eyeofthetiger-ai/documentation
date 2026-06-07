@@ -15,7 +15,7 @@ async def main():
     async with streamablehttp_client(f"{DEVICE}/mcp/") as (read, write, _):
         async with ClientSession(read, write) as session:
             await session.initialize()
-            result = await session.call_tool("record_video", {"duration_s": 5})
+            result = await session.call_tool("record_video", {"duration_s": 10})
             print(result.content[0].text)
 
     # The clip is now on the device; download it.
