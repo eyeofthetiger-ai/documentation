@@ -28,6 +28,10 @@ You can verify it's running by visiting:
 http://eyeofthetiger.local/docs
 ```
 
-## Examples
+## Test the endpoints
 
-Looking for ready-to-run projects built on EyeOfTheTiger? Check out the [examples](https://github.com/eyeofthetiger-ai/examples) repository, which includes projects like motion detection, daily timelapse, and person-spotted notifications.
+[`minimal_examples/`](minimal_examples/) has quick smoke tests (a bash script and an MCP script) that capture an image, record a short clip, and open the live stream against your device — handy for confirming everything works.
+
+## Use cases
+
+[`usecases/`](usecases/) has full, ready-to-run projects built on EyeOfTheTiger — motion detection, a daily timelapse, person-spotted notifications, and more.
