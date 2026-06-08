@@ -25,6 +25,3 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 python capture.py
 ```
-
-For a live view, open the camera in the portal dashboard (it streams over your
-logged-in session).

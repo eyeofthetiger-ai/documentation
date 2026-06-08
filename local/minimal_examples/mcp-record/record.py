@@ -8,6 +8,7 @@ from mcp.client.streamable_http import streamablehttp_client
 
 DEVICE = "http://eyeofthetiger.local"
 
+print('Recording clip...')
 
 async def main():
     # Trailing slash matters: the device serves MCP at /mcp/ (a request to
@@ -16,7 +17,6 @@ async def main():
         async with ClientSession(read, write) as session:
             await session.initialize()
             result = await session.call_tool("record_video", {"duration_s": 10})
-            print(result.content[0].text)
 
     # The clip is now on the device; download it.
     clip = httpx.get(f"{DEVICE}/v1/recording").content
