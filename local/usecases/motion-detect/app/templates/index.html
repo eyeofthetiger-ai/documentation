@@ -193,7 +193,7 @@
            data-score="{{ ev.score }}"
            data-pixel="{{ ev.pixel_threshold }}"
            data-area="{{ ev.changed_area_threshold }}"
-           data-gap="{{ ev.frame_gap }}"
+           data-poll="{{ ev.poll_interval_s }}"
            data-seconds="{{ ev.record_seconds }}"
            onclick="selectEvent(this)">
         <div class="ts">{{ ev.id | replace('_', ' ') | replace('-', ':', 2) }}</div>
@@ -260,7 +260,7 @@
       ['Score',         (score * 100).toFixed(2) + '%'],
       ['Pixel thresh',  el.dataset.pixel],
       ['Area thresh',   (parseFloat(el.dataset.area) * 100).toFixed(1) + '%'],
-      ['Frame gap',     el.dataset.gap],
+      ['Poll interval', el.dataset.poll + 's'],
       ['Clip length',   el.dataset.seconds + 's'],
     ];
     document.getElementById('meta-row').innerHTML = pills
@@ -283,7 +283,7 @@
     el.dataset.score   = ev.score;
     el.dataset.pixel   = ev.pixel_threshold;
     el.dataset.area    = ev.changed_area_threshold;
-    el.dataset.gap     = ev.frame_gap;
+    el.dataset.poll    = ev.poll_interval_s;
     el.dataset.seconds = ev.record_seconds;
     el.onclick = function() { selectEvent(this); };
     const label = ev.id.replace(/_/g, ' ').replace(/-/g, ':', 2);

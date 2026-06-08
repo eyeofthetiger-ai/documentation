@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-"""Motion descriptor: detects motion in an MJPEG stream and describes events using Ollama."""
+"""Motion descriptor: detects motion via still-image polling and describes events using Ollama."""
 
 import argparse
 import base64
 import json
-import os
 import signal
-import sys
 import time
 from datetime import datetime
 from pathlib import Path
@@ -15,7 +13,7 @@ import cv2
 import numpy as np
 import requests
 
-STREAM_URL = "http://eyeofthetiger.local/stream.mjpg"
+IMAGE_URL = "http://eyeofthetiger.local/v1/image"
 OLLAMA_URL = "http://localhost:11434/api/generate"
 EVENTS_DIR = Path(__file__).parent.parent / "output" / "events"
 OLLAMA_PROMPT = (
@@ -32,10 +30,17 @@ def handle_sigint(sig, frame):
     running = False
 
 
-def open_capture(url: str) -> cv2.VideoCapture:
-    print(f"[descriptor] Connecting to stream: {url}")
-    cap = cv2.VideoCapture(url)
-    return cap
+def fetch_frame() -> np.ndarray | None:
+    """Fetch one JPEG from the device and decode it as a BGR frame."""
+    try:
+        resp = requests.get(IMAGE_URL, timeout=10)
+        if resp.status_code != 200:
+            return None
+        arr = np.frombuffer(resp.content, np.uint8)
+        return cv2.imdecode(arr, cv2.IMREAD_COLOR)
+    except requests.RequestException as exc:
+        print(f"[descriptor] Image fetch failed: {exc}")
+        return None
 
 
 def preprocess(frame: np.ndarray, scale: float = 0.25) -> np.ndarray:
@@ -95,7 +100,7 @@ def save_event(event_dir: Path, initial: np.ndarray, second: np.ndarray,
         "score": round(score, 6),
         "pixel_threshold": args.pixel_threshold,
         "area_threshold": args.area_threshold,
-        "frame_gap": args.frame_gap,
+        "poll_interval_s": args.poll_interval,
         "cooldown": args.cooldown,
         "initial_frame": "initial.jpg",
         "second_frame": "second.jpg",
@@ -112,61 +117,49 @@ def run(args: argparse.Namespace):
     signal.signal(signal.SIGINT, handle_sigint)
     EVENTS_DIR.mkdir(parents=True, exist_ok=True)
 
-    frame_buffer: list[np.ndarray] = []
-    proc_buffer: list[np.ndarray] = []
+    prev_frame = None
+    prev_pre = None
     last_event_time = 0.0
 
-    cap = open_capture(STREAM_URL)
+    print("[descriptor] Monitoring …")
 
     while running:
-        if not cap.isOpened():
-            print("[descriptor] Stream not open, retrying in 3s...")
-            time.sleep(3)
-            cap = open_capture(STREAM_URL)
-            continue
-
-        ret, frame = cap.read()
-        if not ret:
-            print("[descriptor] Failed to read frame, reconnecting in 3s...")
-            cap.release()
-            time.sleep(3)
-            cap = open_capture(STREAM_URL)
-            frame_buffer.clear()
-            proc_buffer.clear()
+        frame = fetch_frame()
+        if frame is None:
+            print("[descriptor] Could not fetch image, retrying in 5s...")
+            time.sleep(5)
             continue
 
         processed = preprocess(frame)
-        frame_buffer.append(frame)
-        proc_buffer.append(processed)
 
-        if len(frame_buffer) > args.frame_gap + 1:
-            frame_buffer.pop(0)
-            proc_buffer.pop(0)
-
-        if len(proc_buffer) < args.frame_gap + 1:
+        if prev_pre is None:
+            prev_frame, prev_pre = frame, processed
+            time.sleep(args.poll_interval)
             continue
 
-        older_proc = proc_buffer[0]
-        newer_proc = proc_buffer[-1]
-        score = motion_score(older_proc, newer_proc, args.pixel_threshold)
+        score = motion_score(prev_pre, processed, args.pixel_threshold)
 
         now = time.time()
         if score >= args.area_threshold and (now - last_event_time) >= args.cooldown:
             ts = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
             print(f"[descriptor] Motion detected! score={score:.4f}, saving event {ts}")
             event_dir = EVENTS_DIR / ts
-            save_event(event_dir, frame_buffer[0], frame_buffer[-1], score, args)
+            save_event(event_dir, prev_frame, frame, score, args)
             last_event_time = time.time()
+            prev_frame, prev_pre = None, None
+        else:
+            prev_frame, prev_pre = frame, processed
 
-    cap.release()
+        time.sleep(args.poll_interval)
+
     print("[descriptor] Stopped.")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="MJPEG motion descriptor using Ollama")
+    parser = argparse.ArgumentParser(description="Still-image motion descriptor using Ollama")
     parser.add_argument("--model", default="gemma4", help="Ollama vision model (default: gemma4)")
-    parser.add_argument("--frame-gap", type=int, default=10,
-                        help="Number of frames between comparison pair (default: 10)")
+    parser.add_argument("--poll-interval", type=float, default=1.0,
+                        help="Seconds between image fetches (default: 1.0)")
     parser.add_argument("--pixel-threshold", type=int, default=25,
                         help="Per-pixel diff value to count as changed (default: 25)")
     parser.add_argument("--area-threshold", type=float, default=0.02,
