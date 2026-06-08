@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Motion Events</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, sans-serif;
+      font-size: 14px;
+      background: #111;
+      color: #ddd;
+      display: flex;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ───────────────────────────────────────────────────── */
+    #sidebar {
+      width: 220px;
+      min-width: 180px;
+      background: #1a1a1a;
+      border-right: 1px solid #2a2a2a;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #sidebar h1 {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: #888;
+      padding: 14px 12px 10px;
+      border-bottom: 1px solid #2a2a2a;
+      flex-shrink: 0;
+    }
+
+    #event-list {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .event-item {
+      padding: 10px 12px;
+      border-bottom: 1px solid #222;
+      cursor: pointer;
+      transition: background .15s;
+    }
+
+    .event-item:hover { background: #222; }
+    .event-item.active { background: #1e3a5f; border-left: 3px solid #4a9eff; }
+
+    .event-item .ts {
+      font-size: 12px;
+      color: #aaa;
+      margin-bottom: 3px;
+    }
+
+    .event-item .score {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e8a030;
+    }
+
+    .empty-state {
+      padding: 24px 12px;
+      color: #555;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* ── Main panel ────────────────────────────────────────────────── */
+    #main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    #placeholder {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #444;
+      font-size: 15px;
+    }
+
+    #detail { display: none; }
+
+    #detail h2 {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 16px;
+      font-weight: 400;
+    }
+
+    /* ── Image grid ────────────────────────────────────────────────── */
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 700px) {
+      body { flex-direction: column; overflow: auto; }
+      #sidebar { width: 100%; min-width: unset; height: auto; border-right: none; border-bottom: 1px solid #2a2a2a; }
+      #event-list { max-height: 180px; }
+      #main { overflow: visible; }
+      .image-grid { grid-template-columns: 1fr; }
+    }
+
+    .img-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .img-card .label {
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: #666;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .img-card img {
+      width: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    /* ── Video ─────────────────────────────────────────────────────── */
+    .video-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .video-card .label {
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: #666;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .video-card video {
+      width: 100%;
+      display: block;
+      background: #000;
+      max-height: 480px;
+    }
+
+    /* ── Meta pills ────────────────────────────────────────────────── */
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .pill {
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 11px;
+      color: #888;
+    }
+
+    .pill span { color: #ccc; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <h1>Motion Events</h1>
+  <div id="event-list">
+    {% if events %}
+      {% for ev in events %}
+      <div class="event-item" data-id="{{ ev.id }}"
+           data-score="{{ ev.score }}"
+           data-pixel="{{ ev.pixel_threshold }}"
+           data-area="{{ ev.changed_area_threshold }}"
+           data-gap="{{ ev.frame_gap }}"
+           data-seconds="{{ ev.record_seconds }}"
+           onclick="selectEvent(this)">
+        <div class="ts">{{ ev.id | replace('_', ' ') | replace('-', ':', 2) }}</div>
+        <div class="score">{{ '%.1f'|format(ev.score * 100) }}% changed</div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">No events recorded yet.<br>Run app/detector.py and trigger some motion.</div>
+    {% endif %}
+  </div>
+</nav>
+
+<main id="main">
+  <div id="placeholder">Select an event to review it.</div>
+
+  <div id="detail">
+    <h2 id="detail-title"></h2>
+
+    <div class="image-grid">
+      <div class="img-card">
+        <div class="label">Initial frame</div>
+        <img id="img-initial" src="" alt="Initial frame">
+      </div>
+      <div class="img-card">
+        <div class="label">Second frame</div>
+        <img id="img-second" src="" alt="Second frame">
+      </div>
+      <div class="img-card">
+        <div class="label">Motion diff</div>
+        <img id="img-diff" src="" alt="Motion diff">
+      </div>
+    </div>
+
+    <div class="video-card">
+      <div class="label">Recorded clip</div>
+      <video id="event-video" controls preload="metadata"></video>
+    </div>
+
+    <div class="meta-row" id="meta-row"></div>
+  </div>
+</main>
+
+<script>
+  function selectEvent(el) {
+    document.querySelectorAll('.event-item').forEach(e => e.classList.remove('active'));
+    el.classList.add('active');
+
+    const id = el.dataset.id;
+    const base = `/media/${id}/`;
+
+    document.getElementById('detail-title').textContent =
+      id.replace(/_/g, ' ').replace(/-/g, ':', 2);
+
+    document.getElementById('img-initial').src = base + 'initial.jpg';
+    document.getElementById('img-second').src  = base + 'second.jpg';
+    document.getElementById('img-diff').src    = base + 'diff.jpg';
+
+    const video = document.getElementById('event-video');
+    video.src = base + 'event.mp4';
+    video.load();
+
+    const score   = parseFloat(el.dataset.score);
+    const pills = [
+      ['Score',         (score * 100).toFixed(2) + '%'],
+      ['Pixel thresh',  el.dataset.pixel],
+      ['Area thresh',   (parseFloat(el.dataset.area) * 100).toFixed(1) + '%'],
+      ['Frame gap',     el.dataset.gap],
+      ['Clip length',   el.dataset.seconds + 's'],
+    ];
+    document.getElementById('meta-row').innerHTML = pills
+      .map(([k, v]) => `<div class="pill">${k}: <span>${v}</span></div>`)
+      .join('');
+
+    document.getElementById('placeholder').style.display = 'none';
+    document.getElementById('detail').style.display = 'block';
+  }
+
+  // Auto-select the first event on load
+  const first = document.querySelector('.event-item');
+  if (first) selectEvent(first);
+
+  // Poll for new events every 5 seconds
+  function makeItem(ev) {
+    const el = document.createElement('div');
+    el.className = 'event-item';
+    el.dataset.id      = ev.id;
+    el.dataset.score   = ev.score;
+    el.dataset.pixel   = ev.pixel_threshold;
+    el.dataset.area    = ev.changed_area_threshold;
+    el.dataset.gap     = ev.frame_gap;
+    el.dataset.seconds = ev.record_seconds;
+    el.onclick = function() { selectEvent(this); };
+    const label = ev.id.replace(/_/g, ' ').replace(/-/g, ':', 2);
+    el.innerHTML = `<div class="ts">${label}</div>`
+                 + `<div class="score">${(ev.score * 100).toFixed(1)}% changed</div>`;
+    return el;
+  }
+
+  let newestKnownId = first ? first.dataset.id : null;
+
+  async function pollEvents() {
+    try {
+      const res = await fetch('/api/events');
+      const events = await res.json();
+      const list = document.getElementById('event-list');
+
+      // Remove empty-state placeholder if present
+      const empty = list.querySelector('.empty-state');
+
+      for (const ev of events) {
+        if (newestKnownId && ev.id <= newestKnownId) break;
+        const item = makeItem(ev);
+        list.insertBefore(item, list.firstChild);
+        if (empty) empty.remove();
+        // Auto-select only if nothing is currently selected
+        if (!document.querySelector('.event-item.active')) selectEvent(item);
+      }
+
+      if (events.length > 0) newestKnownId = events[0].id;
+    } catch (_) { /* stream or server blip — try again next tick */ }
+  }
+
+  setInterval(pollEvents, 5000);
+</script>
+</body>
+</html>

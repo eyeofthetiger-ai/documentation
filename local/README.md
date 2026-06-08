@@ -8,11 +8,11 @@ EyeOfTheTiger runs an HTTP camera server and a [Model Context Protocol (MCP)](ht
 
 | Guide | Description |
 |---|---|
-| [Integrate with Anthropic](integrate-with-anthropic.md) | Connect EyeOfTheTiger to Claude via Claude Code or Claude Desktop |
-| [Integrate with OpenAI](integrate-with-openai.md) | Use EyeOfTheTiger with OpenAI models |
-| [Integrate with Google](integrate-with-google.md) | Connect to Google AI tools |
-| [Integrate with Ollama](integrate-with-ollama.md) | Run local models against your camera feed |
-| [Integrate with OpenClaw](integrate-with-openclaw.md) | Use EyeOfTheTiger through the OpenClaw platform |
+| [Integrate with Anthropic](integrations/integrate-with-anthropic.md) | Connect EyeOfTheTiger to Claude via Claude Code or Claude Desktop |
+| [Integrate with OpenAI](integrations/integrate-with-openai.md) | Use EyeOfTheTiger with OpenAI models |
+| [Integrate with Google](integrations/integrate-with-google.md) | Connect to Google AI tools |
+| [Integrate with Ollama](integrations/integrate-with-ollama.md) | Run local models against your camera feed |
+| [Integrate with OpenClaw](integrations/integrate-with-openclaw.md) | Use EyeOfTheTiger through the OpenClaw platform |
 
 ## Getting Started
 
@@ -28,6 +28,10 @@ You can verify it's running by visiting:
 http://eyeofthetiger.local/docs
 ```
 
-## Examples
+## Test the endpoints
 
-Looking for ready-to-run projects built on EyeOfTheTiger? Check out the [examples](https://github.com/eyeofthetiger-ai/examples) repository, which includes projects like motion detection, daily timelapse, and person-spotted notifications.
+[`minimal_examples/`](minimal_examples/) has quick smoke tests (a bash script and an MCP script) that capture an image, record a short clip, and open the live stream against your device — handy for confirming everything works.
+
+## Use cases
+
+[`usecases/`](usecases/) has full, ready-to-run projects built on EyeOfTheTiger — motion detection, a daily timelapse, person-spotted notifications, and more.

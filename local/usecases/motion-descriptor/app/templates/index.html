@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motion Events</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #111;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #1a1a1a;
+      border-bottom: 1px solid #2a2a2a;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    header h1 { font-size: 1.1rem; font-weight: 600; color: #fff; letter-spacing: 0.02em; }
+    header .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #e04040;
+      box-shadow: 0 0 6px #e04040;
+    }
+
+    .layout {
+      display: flex;
+      height: calc(100vh - 49px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      min-width: 220px;
+      background: #161616;
+      border-right: 1px solid #2a2a2a;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .sidebar-empty {
+      padding: 32px 20px;
+      color: #555;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+    .event-item {
+      display: block;
+      padding: 12px 16px;
+      border-bottom: 1px solid #1f1f1f;
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.1s;
+    }
+    .event-item:hover { background: #1e1e1e; }
+    .event-item.active { background: #1f2b3a; border-left: 3px solid #4a9eff; }
+    .event-item .ts {
+      font-size: 0.78rem;
+      color: #aaa;
+      font-family: "SF Mono", "Fira Code", monospace;
+    }
+    .event-item .score {
+      font-size: 0.72rem;
+      color: #666;
+      margin-top: 2px;
+    }
+    .event-item.active .ts { color: #cde; }
+
+    /* Main panel */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    .no-selection {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #444;
+      font-size: 0.9rem;
+      gap: 8px;
+    }
+    .no-selection svg { opacity: 0.25; }
+
+    .event-header {
+      margin-bottom: 20px;
+    }
+    .event-header h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      font-family: "SF Mono", "Fira Code", monospace;
+    }
+    .event-meta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .meta-pill {
+      font-size: 0.72rem;
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 2px 8px;
+      color: #888;
+    }
+    .meta-pill span { color: #bbb; }
+
+    .images {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 700px) {
+      .layout { flex-direction: column; height: auto; }
+      .sidebar { width: 100%; height: 220px; border-right: none; border-bottom: 1px solid #2a2a2a; }
+      .images { grid-template-columns: 1fr; }
+    }
+
+    .image-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .image-label {
+      padding: 6px 12px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #666;
+      border-bottom: 1px solid #222;
+    }
+    .image-label.before { color: #888; }
+    .image-label.after  { color: #4a9eff; }
+    .image-card img {
+      width: 100%;
+      display: block;
+      max-height: 380px;
+      object-fit: contain;
+      background: #0d0d0d;
+    }
+
+    .description-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 16px 18px;
+    }
+    .description-card h3 {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 10px;
+    }
+    .description-card p {
+      font-size: 0.9rem;
+      line-height: 1.65;
+      color: #ccc;
+      white-space: pre-wrap;
+    }
+    .description-card p.error { color: #e06060; font-family: monospace; font-size: 0.82rem; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="dot"></div>
+  <h1>Motion Events</h1>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    {% if events %}
+      {% for e in events %}
+        <a href="/event/{{ e.folder }}"
+           class="event-item {% if selected and selected.folder == e.folder %}active{% endif %}">
+          <div class="ts">{{ e.folder.replace('_', ' ') }}</div>
+          <div class="score">score {{ "%.3f"|format(e.score) }} &middot; {{ e.model }}</div>
+        </a>
+      {% endfor %}
+    {% else %}
+      <div class="sidebar-empty">No events recorded yet.<br>Run descriptor.py and trigger motion to get started.</div>
+    {% endif %}
+  </nav>
+
+  <main class="main">
+    {% if selected %}
+      <div class="event-header">
+        <h2>{{ selected.folder.replace('_', ' ') }}</h2>
+        <div class="event-meta">
+          <div class="meta-pill">score <span>{{ "%.4f"|format(selected.score) }}</span></div>
+          <div class="meta-pill">model <span>{{ selected.model }}</span></div>
+          <div class="meta-pill">pixel&nbsp;thresh <span>{{ selected.pixel_threshold }}</span></div>
+          <div class="meta-pill">area&nbsp;thresh <span>{{ selected.area_threshold }}</span></div>
+          <div class="meta-pill">frame&nbsp;gap <span>{{ selected.frame_gap }}</span></div>
+        </div>
+      </div>
+
+      <div class="images">
+        <div class="image-card">
+          <div class="image-label before">Before</div>
+          <img src="/image/{{ selected.folder }}/{{ selected.initial_frame }}" alt="Before motion">
+        </div>
+        <div class="image-card">
+          <div class="image-label after">After</div>
+          <img src="/image/{{ selected.folder }}/{{ selected.second_frame }}" alt="After motion">
+        </div>
+      </div>
+
+      <div class="description-card">
+        <h3>Ollama description &mdash; {{ selected.model }}</h3>
+        {% if selected.description.startswith('ERROR:') %}
+          <p class="error">{{ selected.description }}</p>
+        {% else %}
+          <p>{{ selected.description }}</p>
+        {% endif %}
+      </div>
+
+    {% elif events %}
+      <div class="no-selection">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+        </svg>
+        Select an event from the list
+      </div>
+    {% else %}
+      <div class="no-selection">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01"/>
+        </svg>
+        No events recorded yet
+      </div>
+    {% endif %}
+  </main>
+</div>
+
+</body>
+</html>
