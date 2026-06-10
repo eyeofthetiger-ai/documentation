@@ -6,6 +6,20 @@ it, depending on how much control you want and where your AI agents run.
 
 ---
 
+## Quick Start
+
+We recommend starting with **local** — it's free to prototype and quick to get set up.
+
+1. **Plug in your Eye of the Tiger** and wait for it to boot.
+2. **Open `eyeofthetiger.local/setup`** in your browser to select your Wi-Fi network.
+3. **Choose an integration** to get going.
+
+Once you're up and running, head to the [local documentation](local/README.md) for
+integration guides and examples. When you're ready to access your camera remotely,
+the [cloud documentation](cloud/README.md) covers everything you need.
+
+---
+
 ## Local
 
 Your camera and your AI agent are on the same network. The agent talks directly
