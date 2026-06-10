@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-"""Person-detection notifier: monitors an MJPEG stream for motion, then uses
+"""Person-detection notifier: polls the still-image endpoint for motion, then uses
 Ollama to classify whether a person is present and posts to Slack."""
 
 import argparse
 import base64
 import json
 import logging
-import os
 import signal
-import sys
 import time
 from datetime import datetime
 from pathlib import Path
@@ -19,7 +17,10 @@ import requests
 
 from slack_poster import check_slack_env, send_slack_alert
 
-STREAM_URL = "http://eyeofthetiger.local/v1/stream.mjpg"
+IMAGE_URL = "http://eyeofthetiger.local/v1/image"
+RECORD_START_URL = "http://eyeofthetiger.local/v1/start"
+RECORD_STOP_URL = "http://eyeofthetiger.local/v1/stop"
+RECORDING_URL = "http://eyeofthetiger.local/v1/recording"
 OLLAMA_BASE_URL = "http://localhost:11434"
 OUTPUT_DIR = Path(__file__).parent.parent / "output" / "events"
 
@@ -51,8 +52,8 @@ signal.signal(signal.SIGINT, handle_sigint)
 
 def parse_args():
     p = argparse.ArgumentParser(description="Motion-triggered person detector")
-    p.add_argument("--frame-gap", type=int, default=5,
-                   help="Number of frames between the two comparison frames (default: 5)")
+    p.add_argument("--poll-interval", type=float, default=1.0,
+                   help="Seconds between image fetches (default: 1.0)")
     p.add_argument("--pixel-threshold", type=int, default=25,
                    help="Per-pixel difference threshold 0-255 (default: 25)")
     p.add_argument("--area-threshold", type=float, default=0.02,
@@ -61,11 +62,24 @@ def parse_args():
                    help="Seconds to wait after AI returns before triggering again (default: 10)")
     p.add_argument("--model", default="gemma4",
                    help="Ollama vision model to use (default: gemma4)")
-    p.add_argument("--reconnect-delay", type=float, default=3.0,
-                   help="Seconds to wait before reconnecting after stream loss (default: 3)")
+    p.add_argument("--reconnect-delay", type=float, default=5.0,
+                   help="Seconds to wait after a fetch failure before retrying (default: 5)")
     p.add_argument("--video-duration", type=float, default=10.0,
                    help="Seconds of video to capture and post when a person is confirmed (default: 10)")
     return p.parse_args()
+
+
+def fetch_frame() -> np.ndarray | None:
+    """Fetch one JPEG from the device and decode it as a BGR frame."""
+    try:
+        resp = requests.get(IMAGE_URL, timeout=10)
+        if resp.status_code != 200:
+            return None
+        arr = np.frombuffer(resp.content, np.uint8)
+        return cv2.imdecode(arr, cv2.IMREAD_COLOR)
+    except requests.RequestException as exc:
+        log.warning("Image fetch failed: %s", exc)
+        return None
 
 
 def preprocess(frame):
@@ -119,39 +133,41 @@ def classify_person(image_path: Path, model: str) -> tuple[bool, str]:
 
 
 def capture_video(event_dir: Path, duration: float) -> Path | None:
-    """Open the video stream, record for duration seconds, save as MP4; return path or None."""
-    cap = cv2.VideoCapture(STREAM_URL)
-    if not cap.isOpened():
-        log.warning("Could not open video stream: %s", STREAM_URL)
+    """Start device-side recording, wait duration seconds, stop, download the MP4."""
+    try:
+        resp = requests.post(RECORD_START_URL, timeout=10)
+        if resp.status_code not in (200, 201):
+            log.warning("Failed to start recording: %s", resp.status_code)
+            return None
+        log.info("Recording started. Capturing %.1fs …", duration)
+    except requests.RequestException as exc:
+        log.warning("Failed to start recording: %s", exc)
         return None
 
-    ret, first_frame = cap.read()
-    if not ret:
-        cap.release()
-        log.warning("Could not read first frame from video stream")
+    time.sleep(duration)
+
+    try:
+        resp = requests.post(RECORD_STOP_URL, timeout=15)
+        if resp.status_code != 200:
+            log.warning("Failed to stop recording: %s", resp.status_code)
+            return None
+    except requests.RequestException as exc:
+        log.warning("Failed to stop recording: %s", exc)
         return None
 
-    frames = [first_frame]
-    log.info("Capturing %.1fs of video …", duration)
-    start = time.time()
-    while time.time() - start < duration:
-        ret, frame = cap.read()
-        if ret:
-            frames.append(frame)
-    elapsed = time.time() - start
-    cap.release()
-
-    fps = len(frames) / elapsed
-    h, w = frames[0].shape[:2]
-    video_path = event_dir / "event.mp4"
-    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-    writer = cv2.VideoWriter(str(video_path), fourcc, fps, (w, h))
-    for f in frames:
-        writer.write(f)
-    writer.release()
-
-    log.info("Saved %d-frame video at %.1f fps to %s", len(frames), fps, video_path.name)
-    return video_path
+    log.info("Downloading clip …")
+    try:
+        resp = requests.get(RECORDING_URL, timeout=60)
+        if resp.status_code != 200:
+            log.warning("Failed to download recording: %s", resp.status_code)
+            return None
+        video_path = event_dir / "event.mp4"
+        video_path.write_bytes(resp.content)
+        log.info("Saved %d-byte video to %s", len(resp.content), video_path.name)
+        return video_path
+    except requests.RequestException as exc:
+        log.warning("Failed to download recording: %s", exc)
+        return None
 
 
 def save_event(event_dir: Path, timestamp: str, model: str, score: float,
@@ -165,7 +181,7 @@ def save_event(event_dir: Path, timestamp: str, model: str, score: float,
             "pixel": args.pixel_threshold,
             "area": args.area_threshold,
         },
-        "frame_gap": args.frame_gap,
+        "poll_interval_s": args.poll_interval,
         "cooldown_seconds": args.cooldown,
         "images": {
             "initial": "initial.jpg",
@@ -183,56 +199,36 @@ def save_event(event_dir: Path, timestamp: str, model: str, score: float,
     return path
 
 
-def open_stream(url: str):
-    log.info("Connecting to stream: %s", url)
-    cap = cv2.VideoCapture(url)
-    if not cap.isOpened():
-        return None
-    log.info("Stream connected.")
-    return cap
-
-
 def run(args):
     global running
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    cap = None
-    frame_buffer = []   # ring of (processed, raw) tuples, length = frame_gap + 1
+    prev_frame = None
+    prev_pre = None
     cooldown_until = 0.0
 
-    while running:
-        # --- ensure stream is open ---
-        if cap is None or not cap.isOpened():
-            cap = open_stream(STREAM_URL)
-            if cap is None:
-                log.warning("Could not open stream, retrying in %.1fs …", args.reconnect_delay)
-                time.sleep(args.reconnect_delay)
-                continue
-            frame_buffer.clear()
+    log.info("Monitoring …")
 
-        ret, frame = cap.read()
-        if not ret:
-            log.warning("Stream read failed, reconnecting in %.1fs …", args.reconnect_delay)
-            cap.release()
-            cap = None
+    while running:
+        frame = fetch_frame()
+        if frame is None:
+            log.warning("Could not fetch image, retrying in %.1fs …", args.reconnect_delay)
             time.sleep(args.reconnect_delay)
             continue
 
         processed = preprocess(frame)
-        frame_buffer.append((processed, frame))
-        if len(frame_buffer) > args.frame_gap + 1:
-            frame_buffer.pop(0)
 
-        if len(frame_buffer) < args.frame_gap + 1:
-            continue  # not enough frames yet
+        if prev_pre is None:
+            prev_frame, prev_pre = frame, processed
+            time.sleep(args.poll_interval)
+            continue
 
-        # --- motion check ---
-        older_proc, older_raw = frame_buffer[0]
-        newer_proc, newer_raw = frame_buffer[-1]
-        score = motion_score(older_proc, newer_proc, args.pixel_threshold)
+        score = motion_score(prev_pre, processed, args.pixel_threshold)
 
         now = time.time()
         if score < args.area_threshold or now < cooldown_until:
+            prev_frame, prev_pre = frame, processed
+            time.sleep(args.poll_interval)
             continue
 
         log.info("Motion detected! Score=%.4f (threshold=%.4f)", score, args.area_threshold)
@@ -243,11 +239,10 @@ def run(args):
 
         initial_path = event_dir / "initial.jpg"
         second_path = event_dir / "second.jpg"
-        cv2.imwrite(str(initial_path), older_raw)
-        cv2.imwrite(str(second_path), newer_raw)
+        cv2.imwrite(str(initial_path), prev_frame)
+        cv2.imwrite(str(second_path), frame)
         log.info("Saved frames to %s", event_dir)
 
-        # --- AI classification ---
         error = None
         raw_response = ""
         person = False
@@ -274,15 +269,12 @@ def run(args):
         )
         log.info("Event saved: %s", event_path)
 
-        # --- start cooldown AFTER AI returns ---
         cooldown_until = time.time() + args.cooldown
         log.info("Cooldown active for %.1fs", args.cooldown)
 
-        # clear buffer so stale frames don't immediately re-trigger
-        frame_buffer.clear()
+        prev_frame, prev_pre = None, None
+        time.sleep(args.poll_interval)
 
-    if cap:
-        cap.release()
     log.info("Detector stopped.")
 
 
@@ -290,9 +282,9 @@ if __name__ == "__main__":
     check_slack_env()
     args = parse_args()
     log.info(
-        "Starting detector | model=%s frame-gap=%d pixel-threshold=%d "
+        "Starting detector | model=%s poll-interval=%.1fs pixel-threshold=%d "
         "area-threshold=%.3f cooldown=%.1fs",
-        args.model, args.frame_gap, args.pixel_threshold,
+        args.model, args.poll_interval, args.pixel_threshold,
         args.area_threshold, args.cooldown,
     )
     run(args)
