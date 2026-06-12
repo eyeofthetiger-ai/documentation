@@ -22,7 +22,7 @@ Code in the [`app/`](app/) folder.
 ```
 cron (every 2 min)
     → app/capture.sh
-        → GET http://eyeofthetiger.local/capture-image
+        → GET http://eyeofthetiger.local/v1/image
         → save to output/frames/YYYY-MM-DD/HH-MM.jpg
 
 cron (00:05 daily)
@@ -50,7 +50,7 @@ STAGE 1 — Create and test the capture script
    `output` folder alongside it, with subfolders called `frames` and `timelapse`.
 
 2. Create app/capture.sh — a shell script that:
-   - Fetches a JPEG from http://eyeofthetiger.local/capture-image using curl.
+   - Fetches a JPEG from http://eyeofthetiger.local/v1/image using curl.
    - Saves it to output/frames/$(date +%Y-%m-%d)/$(date +%H-%M).jpg.
 
 3. Run app/capture.sh once to grab a test frame using `bash app/capture.sh` (no chmod

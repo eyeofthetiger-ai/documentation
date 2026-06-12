@@ -19,6 +19,9 @@ instructions into Claude Code under the example's `app/` folder.
 - [Person Spotted Notification](person-spotted-notification/README.md): detect
   motion locally, use an Ollama vision model to check for a person, and post an
   alert image to Slack when one is found.
+- [Kitchen Assistant](kitchen-assistant/README.md): a conversational cooking
+  assistant that uses the MCP `take_snapshot` tool to look at your worktop on
+  request.
 
 ## Ideas
 
@@ -46,10 +49,3 @@ notification when a parcel appears, and reset the alert after it is collected.
 Use an OpenClaw agent to capture images periodically and look for unexpected
 people, open doors, fallen objects, or other concerns. Send a Slack alert when
 the agent notices something unusual.
-
-### Kitchen Assistant
-
-Build a conversational cooking assistant that can call the EyeOfTheTiger MCP
-`take_snapshot` tool when you ask it to look at your worktop. Use it for visual
-checks such as whether food has browned enough or dough has reached the right
-consistency.

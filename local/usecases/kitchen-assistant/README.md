@@ -59,8 +59,8 @@ endpoint to the public internet.
 
 OpenClaw supports major AI providers such as Anthropic, Google, and OpenAI. It
 can also use a locally hosted model through Ollama. See the
-[OpenClaw integration guide](../../how-to/integrate-with-openclaw.md) and
-[Ollama integration guide](../../how-to/integrate-with-ollama.md) for the
+[OpenClaw integration guide](../../integrations/integrate-with-openclaw.md) and
+[Ollama integration guide](../../integrations/integrate-with-ollama.md) for the
 general setup paths.
 
 ## Set up OpenClaw
@@ -178,6 +178,6 @@ then retry `openclaw gateway restart`.
 
 ## Further reading
 
-- [Link EyeOfTheTiger With OpenClaw](../../how-to/integrate-with-openclaw.md)
+- [Link EyeOfTheTiger With OpenClaw](../../integrations/integrate-with-openclaw.md)
 - [OpenClaw MCP documentation](https://docs.openclaw.ai/cli/mcp)
 - [OpenClaw dashboard documentation](https://docs.openclaw.ai/web/dashboard)
