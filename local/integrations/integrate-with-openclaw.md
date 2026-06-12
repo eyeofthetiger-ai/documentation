@@ -21,12 +21,8 @@ EyeOfTheTiger exposes a Model Context Protocol (MCP) server at:
 http://eyeofthetiger.local/mcp/
 ```
 
-After you have followed the steps, you can check the API and MCP server are up
-by running:
-
-```bash
-manual_check/ping.sh
-```
+You can verify it's reachable by visiting `http://eyeofthetiger.local/docs` in
+a browser.
 
 ## Setting up OpenClaw
 

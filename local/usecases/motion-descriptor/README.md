@@ -5,8 +5,8 @@ and uses a locally hosted Ollama vision model to describe what changed. When
 something moves in view, the app saves the two compared images and asks the
 model to describe what is happening in the second image.
 
-This example currently provides the Claude Code instructions. When the app is
-generated, its implementation files should be created under `app/`.
+We have included the code created by pasting the instructions below into Claude
+Code in the [`app/`](app/) folder.
 
 ## How it works
 

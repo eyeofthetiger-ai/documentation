@@ -6,8 +6,8 @@ present. When a person is detected, the app records 10 seconds of video on the
 device, downloads it, and posts it to a Slack channel with a "Person spotted"
 alert message.
 
-This example provides the Claude Code instructions. When the app is generated,
-its implementation files should be created under `app/`.
+We have included the code created by pasting the instructions below into Claude
+Code in the [`app/`](app/) folder.
 
 ## How it works
 

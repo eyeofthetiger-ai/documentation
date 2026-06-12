@@ -6,8 +6,8 @@ web dashboard, the REST API, or an AI assistant via the built-in MCP server.
 
 ## 1. Create an account and add your camera
 
-1. Open the portal: **https://portal-598626659536.europe-west2.run.app**
-2. Sign up with email/password or Google.
+1. Open the portal: **https://platform.eyeofthetiger.ai**
+2. Sign up using the **invite code** from your order confirmation email.
 3. On the dashboard, click **Add camera**, give it a name, and click **Add**.
 4. Copy the **Device ID** and **Device Token** — the token is shown once and
    cannot be retrieved again.
@@ -25,7 +25,7 @@ Under **Remote Portal**, fill in:
 
 | Field | Value |
 |---|---|
-| Platform URL | `wss://platform-gateway-598626659536.europe-west2.run.app/device/ws` |
+| Platform URL | `wss://platform.eyeofthetiger.ai/device/ws` |
 | Device ID | The ID you copied in step 1 |
 | Device Token | The token you copied in step 1 |
 | Enable | ✓ |
@@ -47,7 +47,7 @@ with the `x-api-key` header.
 ### List cameras
 
 ```bash
-curl https://portal-598626659536.europe-west2.run.app/api/v1/cameras \
+curl https://platform.eyeofthetiger.ai/api/v1/cameras \
   -H "x-api-key: YOUR_API_KEY"
 ```
 
@@ -70,7 +70,7 @@ Triggers a capture and returns the JPEG bytes directly. Blocks until the image
 is ready (up to ~45 seconds). The camera must be online.
 
 ```bash
-curl https://portal-598626659536.europe-west2.run.app/api/v1/cameras/cam_a1b2c3d4e5/image \
+curl https://platform.eyeofthetiger.ai/api/v1/cameras/cam_a1b2c3d4e5/image \
   -H "x-api-key: YOUR_API_KEY" \
   --fail-with-body \
   -o capture.jpg
@@ -96,7 +96,7 @@ Add this to your `claude_desktop_config.json`:
   "mcpServers": {
     "eyeofthetiger": {
       "type": "http",
-      "url": "https://portal-598626659536.europe-west2.run.app/api/mcp",
+      "url": "https://platform.eyeofthetiger.ai/api/mcp",
       "headers": {
         "x-api-key": "YOUR_API_KEY"
       }
@@ -109,7 +109,7 @@ Add this to your `claude_desktop_config.json`:
 
 ```bash
 claude mcp add --transport http eyeofthetiger \
-  https://portal-598626659536.europe-west2.run.app/api/mcp \
+  https://platform.eyeofthetiger.ai/api/mcp \
   --header "x-api-key: YOUR_API_KEY"
 ```
 
