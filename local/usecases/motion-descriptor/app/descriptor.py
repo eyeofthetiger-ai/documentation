@@ -13,7 +13,7 @@ import cv2
 import numpy as np
 import requests
 
-IMAGE_URL = "http://eyeofthetiger.local/v1/image"
+IMAGE_URL = "http://eyeofthetiger.local/v1/snapshot"
 OLLAMA_URL = "http://localhost:11434/api/generate"
 EVENTS_DIR = Path(__file__).parent.parent / "output" / "events"
 OLLAMA_PROMPT = (

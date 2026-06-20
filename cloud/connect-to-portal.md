@@ -70,7 +70,7 @@ Triggers a capture and returns the JPEG bytes directly. Blocks until the image
 is ready (up to ~45 seconds). The camera must be online.
 
 ```bash
-curl https://platform.eyeofthetiger.ai/api/v1/cameras/cam_a1b2c3d4e5/image \
+curl https://platform.eyeofthetiger.ai/api/v1/cameras/cam_a1b2c3d4e5/snapshot \
   -H "x-api-key: YOUR_API_KEY" \
   --fail-with-body \
   -o capture.jpg
@@ -126,4 +126,4 @@ Using eyeofthetiger, capture an image from my camera and describe what you see.
 | Tool | Description |
 |---|---|
 | `list_cameras` | List all your cameras with online/offline status |
-| `capture_image` | Capture a photo from a camera and return the image |
+| `take_snapshot` | Take a snapshot from a camera and return the image |

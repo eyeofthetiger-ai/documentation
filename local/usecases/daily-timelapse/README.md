@@ -7,7 +7,7 @@ Code in the [`app/`](app/) folder.
 
 ## How it works
 
-1. A cron job runs every 2 minutes during daylight hours and saves a JPEG from the HTTP capture-image endpoint.
+1. A cron job runs every 2 minutes during daylight hours and saves a JPEG from the HTTP snapshot endpoint.
 2. At midnight a second cron job runs ffmpeg to stitch the day's frames into a time-lapse MP4.
 3. The video is either uploaded to a Google Drive folder **or** moved to a local output directory, then the day's frames are archived or deleted.
 
@@ -22,7 +22,7 @@ Code in the [`app/`](app/) folder.
 ```
 cron (every 2 min)
     → app/capture.sh
-        → GET http://eyeofthetiger.local/v1/image
+        → GET http://eyeofthetiger.local/v1/snapshot
         → save to output/frames/YYYY-MM-DD/HH-MM.jpg
 
 cron (00:05 daily)
@@ -50,7 +50,7 @@ STAGE 1 — Create and test the capture script
    `output` folder alongside it, with subfolders called `frames` and `timelapse`.
 
 2. Create app/capture.sh — a shell script that:
-   - Fetches a JPEG from http://eyeofthetiger.local/v1/image using curl.
+   - Fetches a JPEG from http://eyeofthetiger.local/v1/snapshot using curl.
    - Saves it to output/frames/$(date +%Y-%m-%d)/$(date +%H-%M).jpg.
 
 3. Run app/capture.sh once to grab a test frame using `bash app/capture.sh` (no chmod

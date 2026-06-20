@@ -10,7 +10,7 @@ Code in the [`app/`](app/) folder.
 
 ## How it works
 
-1. A Python application polls `GET http://eyeofthetiger.local/v1/image` at a
+1. A Python application polls `GET http://eyeofthetiger.local/v1/snapshot` at a
    configurable interval to fetch still JPEG frames from the camera.
 2. Each new frame is compared to the previous one using OpenCV.
 3. When the changed area exceeds a configurable threshold, the app saves the
@@ -31,7 +31,7 @@ Code in the [`app/`](app/) folder.
 
 ```text
 EyeOfTheTiger
-    <- GET http://eyeofthetiger.local/v1/image  (polled on interval)
+    <- GET http://eyeofthetiger.local/v1/snapshot  (polled on interval)
     -> client-side Python app
         -> OpenCV compares successive frames
         -> changed area exceeds threshold
@@ -54,7 +54,7 @@ create the project for you:
 Build a client-side motion descriptor in this directory. Use the EyeOfTheTiger
 still-image endpoint:
 
-  GET http://eyeofthetiger.local/v1/image
+  GET http://eyeofthetiger.local/v1/snapshot
 
 Poll it at a configurable interval to fetch frames. Do not modify the
 EyeOfTheTiger server. The app must run on this client computer.
@@ -86,7 +86,7 @@ STAGE 1 - Create and test the motion descriptor
    output/events/YYYY-MM-DD_HH-MM-SS/
 
 4. Create app/descriptor.py. It must:
-   - Fetch frames by polling GET http://eyeofthetiger.local/v1/image using
+   - Fetch frames by polling GET http://eyeofthetiger.local/v1/snapshot using
      requests. Decode each response with cv2.imdecode.
    - Retry after a short delay if a fetch fails.
    - Compare each new frame to the previous one. Downscale, convert to

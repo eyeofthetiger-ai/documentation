@@ -5,7 +5,7 @@ use the platform's developer API, so they work from anywhere.
 
 | Folder | What it does |
 |---|---|
-| [`api-capture/`](api-capture/) | `capture.sh` → `GET /api/v1/cameras/{id}/image` → `image.jpg` |
+| [`api-capture/`](api-capture/) | `capture.sh` → `GET /api/v1/cameras/{id}/snapshot` → `image.jpg` |
 | [`api-record/`](api-record/) | `record.sh` → start/stop a clip → `recording.mp4` |
 | [`mcp-capture/`](mcp-capture/) | `capture.py` → MCP `take_snapshot` → `image.jpg` |
 | [`mcp-record/`](mcp-record/) | `record.py` → MCP `record_video` → `recording.mp4` |

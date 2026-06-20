@@ -7,5 +7,5 @@ DATE_DIR="$EXAMPLE_DIR/output/frames/$(date +%Y-%m-%d)"
 OUTPUT_FILE="$DATE_DIR/$(date +%H-%M).jpg"
 
 mkdir -p "$DATE_DIR"
-curl -sf "http://eyeofthetiger.local/capture-image" -o "$OUTPUT_FILE"
+curl -sf "http://eyeofthetiger.local/snapshot" -o "$OUTPUT_FILE"
 echo "Saved: $OUTPUT_FILE"

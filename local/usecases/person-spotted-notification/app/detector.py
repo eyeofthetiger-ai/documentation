@@ -17,7 +17,7 @@ import requests
 
 from slack_poster import check_slack_env, send_slack_alert
 
-IMAGE_URL = "http://eyeofthetiger.local/v1/image"
+IMAGE_URL = "http://eyeofthetiger.local/v1/snapshot"
 RECORD_START_URL = "http://eyeofthetiger.local/v1/start"
 RECORD_STOP_URL = "http://eyeofthetiger.local/v1/stop"
 RECORDING_URL = "http://eyeofthetiger.local/v1/recording"

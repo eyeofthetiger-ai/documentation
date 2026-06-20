@@ -13,7 +13,7 @@ import cv2
 import numpy as np
 import requests
 
-IMAGE_URL = "http://eyeofthetiger.local/v1/image"
+IMAGE_URL = "http://eyeofthetiger.local/v1/snapshot"
 RECORD_START_URL = "http://eyeofthetiger.local/v1/start"
 RECORD_STOP_URL = "http://eyeofthetiger.local/v1/stop"
 RECORDING_URL = "http://eyeofthetiger.local/v1/recording"
