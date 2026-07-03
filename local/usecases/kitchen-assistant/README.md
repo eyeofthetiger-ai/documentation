@@ -18,16 +18,17 @@ Check again. Has it changed enough since the last photo?
 
 ## Why use MCP?
 
-The other examples use the HTTP API or MJPEG stream for predetermined tasks
-such as taking a photo every two minutes or continuously detecting motion.
-This example is different: your AI model decides when to use the camera while
-helping you with an open-ended task.
+The other examples use the HTTP API for predetermined tasks such as taking a
+photo every two minutes or continuously detecting motion. This example is
+different: your AI model decides when to use the camera while helping you
+with an open-ended task.
 
-EyeOfTheTiger exposes three MCP tools:
+EyeOfTheTiger exposes four MCP tools:
 
 - `take_snapshot`: take a fresh JPEG image.
-- `get_configuration`: inspect the current capture resolution.
-- `set_configuration`: change the capture resolution.
+- `record_video`: record a fixed-length clip and return a download URL.
+- `get_configuration`: inspect the current quality setting.
+- `set_quality`: change the quality preset (stills and clips).
 
 ## How the connection works
 

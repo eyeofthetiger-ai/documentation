@@ -13,9 +13,9 @@ Code in the [`app/`](app/) folder.
 2. Each new frame is compared to the previous one using OpenCV.
 3. When the changed area exceeds a configurable threshold, the app saves the
    two compared frames and a visual diff image.
-4. The app then starts a device-side recording via `POST /v1/start`, waits the
-   configured duration, stops it via `POST /v1/stop`, and downloads the
-   finished H.264 MP4 from `GET /v1/recording`.
+4. The app then requests a fixed-length clip in one call via
+   `GET /v1/clip?duration_s=<seconds>`, which blocks while the device records
+   and returns the finished MP4.
 5. A small local web interface lists detected events and lets you inspect the
    initial frame, second frame, diff, and recorded video.
 
@@ -33,10 +33,7 @@ EyeOfTheTiger
         -> OpenCV compares successive frames
         -> changed area exceeds threshold
         -> save initial.jpg, second.jpg, diff.jpg
-        -> POST http://eyeofthetiger.local/v1/start
-        -> wait record_seconds
-        -> POST http://eyeofthetiger.local/v1/stop
-        -> GET  http://eyeofthetiger.local/v1/recording  (download event.mp4)
+        -> GET http://eyeofthetiger.local/v1/clip?duration_s=record_seconds  (download event.mp4)
         -> save event metadata in output/events/<timestamp>/
 
 browser
@@ -59,12 +56,11 @@ EyeOfTheTiger still-image endpoint:
 Poll it at a configurable interval to fetch frames. Do not modify the
 EyeOfTheTiger server. The app must run on this client computer.
 
-For recording clips after motion is detected, use the EyeOfTheTiger recording
-API (all calls made from this client):
+For recording clips after motion is detected, use the EyeOfTheTiger clip
+endpoint (called from this client):
 
-  POST http://eyeofthetiger.local/v1/start   — start recording on the device
-  POST http://eyeofthetiger.local/v1/stop    — stop recording and finalise
-  GET  http://eyeofthetiger.local/v1/recording — download the finished MP4
+  GET http://eyeofthetiger.local/v1/clip?duration_s=<seconds> — record a clip
+  (blocks while the device records) and return the finished MP4
 
 Build the project in two stages. Follow each stage exactly. Do not start stage
 2 until I confirm stage 1 is working.
@@ -101,11 +97,10 @@ STAGE 1 - Create and test the motion detector
        diff.jpg    - a clear visual representation of the changed pixels
        event.json  - timestamp, thresholds, calculated score, poll interval,
                      record seconds, and file names
-   - After saving frames, record a clip using the EyeOfTheTiger recording API:
-       POST /v1/start to start recording on the device
-       Wait --record-seconds seconds
-       POST /v1/stop to finalise the clip
-       GET  /v1/recording to download the MP4, save it as event.mp4
+   - After saving frames, record a clip using the EyeOfTheTiger clip endpoint:
+       GET /v1/clip?duration_s=<record-seconds> to record and download the
+       clip in one call (this blocks for the duration of the recording),
+       save it as event.mp4
    - Make polling interval a command-line option called --poll-interval
      (default: 1.0 seconds).
    - Make clip duration a command-line option called --record-seconds

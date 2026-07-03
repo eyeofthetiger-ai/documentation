@@ -6,7 +6,7 @@ talk straight to the device on your network — no account or API key.
 | Folder | What it does |
 |---|---|
 | [`api-capture/`](api-capture/) | `capture.sh` → `GET /v1/snapshot` → `image.jpg` |
-| [`api-record/`](api-record/) | `record.sh` → start/stop a clip → `recording.mp4` |
+| [`api-record/`](api-record/) | `record.sh` → `GET /v1/clip` → `recording.mp4` |
 | [`mcp-capture/`](mcp-capture/) | `capture.py` → MCP `take_snapshot` → `image.jpg` |
 | [`mcp-record/`](mcp-record/) | `record.py` → MCP `record_video` → `recording.mp4` |
 

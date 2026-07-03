@@ -14,9 +14,7 @@ import numpy as np
 import requests
 
 IMAGE_URL = "http://eyeofthetiger.local/v1/snapshot"
-RECORD_START_URL = "http://eyeofthetiger.local/v1/start"
-RECORD_STOP_URL = "http://eyeofthetiger.local/v1/stop"
-RECORDING_URL = "http://eyeofthetiger.local/v1/recording"
+CLIP_URL = "http://eyeofthetiger.local/v1/clip"
 EVENTS_DIR = Path(__file__).parent.parent / "output" / "events"
 
 SCALE = 0.5
@@ -61,40 +59,19 @@ def motion_score(a: np.ndarray, b: np.ndarray, pixel_threshold: int) -> tuple[fl
 
 
 def record_event_clip(event_dir: Path, seconds: float) -> bool:
-    """Start a device-side recording, wait, stop, then download the MP4."""
+    """Request a fixed-length clip from the device and download the MP4."""
+    print(f"[detector] Recording {seconds}s clip …")
     try:
-        resp = requests.post(RECORD_START_URL, timeout=10)
-        if resp.status_code not in (200, 201):
-            print(f"[detector] Start recording failed: {resp.status_code} {resp.text}")
-            return False
-        print(f"[detector] Recording started. Capturing {seconds}s …")
-    except requests.RequestException as exc:
-        print(f"[detector] Failed to start recording: {exc}")
-        return False
-
-    time.sleep(seconds)
-
-    try:
-        resp = requests.post(RECORD_STOP_URL, timeout=15)
+        resp = requests.get(CLIP_URL, params={"duration_s": int(seconds)}, timeout=seconds + 30)
         if resp.status_code != 200:
-            print(f"[detector] Stop recording failed: {resp.status_code}")
-            return False
-    except requests.RequestException as exc:
-        print(f"[detector] Failed to stop recording: {exc}")
-        return False
-
-    print("[detector] Downloading clip …")
-    try:
-        resp = requests.get(RECORDING_URL, timeout=60)
-        if resp.status_code != 200:
-            print(f"[detector] Download recording failed: {resp.status_code}")
+            print(f"[detector] Record clip failed: {resp.status_code} {resp.text}")
             return False
         mp4_path = event_dir / "event.mp4"
         mp4_path.write_bytes(resp.content)
         print(f"[detector] Saved {mp4_path} ({len(resp.content)} bytes)")
         return True
     except requests.RequestException as exc:
-        print(f"[detector] Failed to download recording: {exc}")
+        print(f"[detector] Failed to record clip: {exc}")
         return False
 
 

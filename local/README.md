@@ -30,7 +30,7 @@ http://eyeofthetiger.local/docs
 
 ## Test the endpoints
 
-[`minimal_examples/`](minimal_examples/) has quick smoke tests (a bash script and an MCP script) that capture an image, record a short clip, and open the live stream against your device — handy for confirming everything works.
+[`minimal_examples/`](minimal_examples/) has quick smoke tests (a bash script and an MCP script) that capture an image and record a short clip against your device — handy for confirming everything works.
 
 ## Use cases
 
