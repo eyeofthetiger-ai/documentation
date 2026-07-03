@@ -11,7 +11,7 @@ Code in the [`app/`](app/) folder.
 
 ## How it works
 
-1. A Python application polls `GET http://eyeofthetiger.local/v1/image` at a
+1. A Python application polls `GET http://eyeofthetiger.local/v1/snapshot` at a
    configurable interval to fetch still JPEG frames from the camera.
 2. Each new frame is compared to the previous one using OpenCV.
 3. When the changed area exceeds a configurable threshold, the two frames are
@@ -19,9 +19,9 @@ Code in the [`app/`](app/) folder.
 4. The model is asked to check whether a person is visible and must respond
    with a JSON object containing a single boolean field: `{"person": true}` or
    `{"person": false}`.
-5. If `person` is `true`, the app starts a device-side recording via
-   `POST /v1/start`, waits for a configurable duration, stops it via
-   `POST /v1/stop`, and downloads the finished H.264 MP4 from `GET /v1/recording`.
+5. If `person` is `true`, the app requests a fixed-length clip in one call via
+   `GET /v1/clip?duration_s=<seconds>`, which blocks while the device records
+   and returns the finished MP4.
 6. The video is posted to a configured Slack channel using a Slack bot token.
 7. A cooldown prevents the same continuous presence from flooding Slack.
 
@@ -65,7 +65,7 @@ export SLACK_CHANNEL_ID=C0123456789
 
 ```text
 EyeOfTheTiger
-    <- GET http://eyeofthetiger.local/v1/image  (polled on interval)
+    <- GET http://eyeofthetiger.local/v1/snapshot  (polled on interval)
     -> client-side Python app
         -> OpenCV compares successive frames
         -> changed area exceeds threshold
@@ -73,10 +73,7 @@ EyeOfTheTiger
         -> Ollama vision model checks for a person in second.jpg
         -> model returns {"person": true/false}
         -> if person: true
-            -> POST http://eyeofthetiger.local/v1/start
-            -> wait N seconds
-            -> POST http://eyeofthetiger.local/v1/stop
-            -> GET  http://eyeofthetiger.local/v1/recording  (download event.mp4)
+            -> GET http://eyeofthetiger.local/v1/clip?duration_s=N  (download event.mp4)
             -> post event.mp4 to Slack with "Person spotted" message
         -> save event metadata in output/events/<timestamp>/
 ```
@@ -90,19 +87,18 @@ create the project for you:
 Build a client-side person-detection notifier in this directory. Use the
 EyeOfTheTiger still-image endpoint:
 
-  GET http://eyeofthetiger.local/v1/image
+  GET http://eyeofthetiger.local/v1/snapshot
 
 Poll it at a configurable interval to fetch frames. Do not modify the
 EyeOfTheTiger server. The app must run on this client computer.
 
 Use a locally hosted Ollama vision model to check whether a person is present
 after motion is detected. When a person is confirmed, record a video clip using
-the EyeOfTheTiger recording API and post it to Slack.
+the EyeOfTheTiger clip endpoint and post it to Slack.
 
-Recording API (all calls made from this client):
-  POST http://eyeofthetiger.local/v1/start   — start recording on the device
-  POST http://eyeofthetiger.local/v1/stop    — stop recording and finalise
-  GET  http://eyeofthetiger.local/v1/recording — download the finished MP4
+Clip endpoint (called from this client):
+  GET http://eyeofthetiger.local/v1/clip?duration_s=<seconds> — record a clip
+  (blocks while the device records) and return the finished MP4
 
 Build the project in two stages. Follow each stage exactly. Do not start stage
 2 until I confirm stage 1 is working.
@@ -128,7 +124,7 @@ STAGE 1 - Create and test the motion detector and person classifier
    output/events/YYYY-MM-DD_HH-MM-SS/
 
 4. Create app/detector.py. It must:
-   - Fetch frames by polling GET http://eyeofthetiger.local/v1/image using
+   - Fetch frames by polling GET http://eyeofthetiger.local/v1/snapshot using
      requests. Decode each response with cv2.imdecode.
    - Retry after a short delay if a fetch fails.
    - Compare each new frame to the previous one. Downscale, convert to
@@ -214,11 +210,9 @@ STAGE 2 - Add Slack notifications (only if I said yes above)
      the upload fails.
 
 4. In the main detection loop, when the person field is true:
-   - Call POST /v1/start to start recording on the device.
-   - Wait --video-duration seconds.
-   - Call POST /v1/stop to stop the recording.
-   - Call GET /v1/recording to download the MP4 and save it as event.mp4 in
-     the event folder.
+   - Call GET /v1/clip?duration_s=<video-duration> to record and download the
+     clip in one call (this blocks for the duration of the recording), save
+     it as event.mp4 in the event folder.
    - Call send_slack_alert with the image path and video path.
 
 5. Update event.json to include a "slack_posted" boolean indicating whether the

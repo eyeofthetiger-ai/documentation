@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Record a 5-second clip from your camera via the platform, saved as recording.mp4.
+# Record a 10-second clip from your camera via the platform, saved as recording.mp4.
 
 PORTAL="https://portal-598626659536.europe-west2.run.app"
 
@@ -23,10 +23,5 @@ fi
 API="$PORTAL/api/v1/cameras/$CAMERA_ID"
 
 echo "Recording a clip..."
-curl -fsS -H "x-api-key: $API_KEY" -X POST "$API/start" > /dev/null
-sleep 10
-curl -fsS -H "x-api-key: $API_KEY" -X POST "$API/stop" > /dev/null
-
-sleep 3  # give the clip a moment to upload
-curl -fsSL -H "x-api-key: $API_KEY" "$API/recording" -o recording.mp4
+curl -fsSL -H "x-api-key: $API_KEY" "$API/clip?duration_s=10" -o recording.mp4
 echo "Saved recording.mp4"

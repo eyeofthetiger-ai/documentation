@@ -1,6 +1,7 @@
 """Record a clip via the hosted MCP server, then save it as recording.mp4."""
 
 import asyncio
+import json
 import os
 from pathlib import Path
 
@@ -29,20 +30,18 @@ if "REPLACE_ME" in API_KEY or "REPLACE_ME" in CAMERA_ID:
     print("Please edit cloud/minimal_examples/.env and replace API_KEY and CAMERA_ID with your values.")
     raise SystemExit(1)
 
-print('Recording clip...')
-
 async def main():
+    print('Recording clip...')
     headers = {"x-api-key": API_KEY}
     async with streamablehttp_client(f"{PORTAL}/api/mcp", headers=headers) as (read, write, _):
         async with ClientSession(read, write) as session:
             await session.initialize()
+            # record_video returns a download URL, not the video itself.
             result = await session.call_tool(
                 "record_video", {"camera_id": CAMERA_ID, "duration_s": 10}
             )
-            print(result.content[0].text)
 
-    # The clip is ready; download it via the developer API.
-    url = f"{PORTAL}/api/v1/cameras/{CAMERA_ID}/recording"
+    url = json.loads(result.content[0].text)["download_url"]
     clip = httpx.get(url, headers=headers, follow_redirects=True).content
     with open("recording.mp4", "wb") as f:
         f.write(clip)

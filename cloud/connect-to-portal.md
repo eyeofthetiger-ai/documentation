@@ -64,17 +64,20 @@ curl https://platform.eyeofthetiger.ai/api/v1/cameras \
 }
 ```
 
-### Get an image
+### Take a snapshot
 
-Triggers a capture and returns the JPEG bytes directly. Blocks until the image
-is ready (up to ~45 seconds). The camera must be online.
+Triggers a snapshot on the camera. Blocks until the image is ready (up to ~45
+seconds), then redirects (302) to a short-lived signed JPEG URL. The camera
+must be online.
 
 ```bash
-curl https://platform.eyeofthetiger.ai/api/v1/cameras/cam_a1b2c3d4e5/image \
+curl -L https://platform.eyeofthetiger.ai/api/v1/cameras/cam_a1b2c3d4e5/snapshot \
   -H "x-api-key: YOUR_API_KEY" \
   --fail-with-body \
   -o capture.jpg
 ```
+
+`-L` follows the redirect to the signed JPEG URL.
 
 `--fail-with-body` makes curl exit with an error if the response is not 2xx
 (e.g. camera offline, timeout), so you don't silently save a JSON error as a
@@ -126,4 +129,7 @@ Using eyeofthetiger, capture an image from my camera and describe what you see.
 | Tool | Description |
 |---|---|
 | `list_cameras` | List all your cameras with online/offline status |
-| `capture_image` | Capture a photo from a camera and return the image |
+| `take_snapshot` | Take a snapshot from a camera and return the image |
+| `record_video` | Record a fixed-length clip and return a download URL for the MP4 |
+| `get_configuration` | Return the current quality setting for a camera |
+| `set_quality` | Set the quality preset for a camera (stills and clips) |

@@ -9,7 +9,7 @@ port-forwarding required.
 | Guide | Description |
 |---|---|
 | [Connect to the Portal](connect-to-portal.md) | Link your camera, get an API key, test with curl and MCP |
-| [Minimal examples](minimal_examples/) | Smoke-test every endpoint (bash + MCP): capture an image, record a clip, open the live preview |
+| [Minimal examples](minimal_examples/) | Smoke-test every endpoint (bash + MCP): capture an image, record a clip |
 
 ## More coming soon
 

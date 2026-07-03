@@ -21,5 +21,5 @@ if [[ "$API_KEY" == *REPLACE_ME* || "$CAMERA_ID" == *REPLACE_ME* ]]; then
 fi
 
 curl -fsSL -H "x-api-key: $API_KEY" \
-  "$PORTAL/api/v1/cameras/$CAMERA_ID/image" -o image.jpg
+  "$PORTAL/api/v1/cameras/$CAMERA_ID/snapshot" -o image.jpg
 echo "Saved image.jpg"

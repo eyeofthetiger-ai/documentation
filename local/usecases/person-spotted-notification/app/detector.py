@@ -17,10 +17,8 @@ import requests
 
 from slack_poster import check_slack_env, send_slack_alert
 
-IMAGE_URL = "http://eyeofthetiger.local/v1/image"
-RECORD_START_URL = "http://eyeofthetiger.local/v1/start"
-RECORD_STOP_URL = "http://eyeofthetiger.local/v1/stop"
-RECORDING_URL = "http://eyeofthetiger.local/v1/recording"
+IMAGE_URL = "http://eyeofthetiger.local/v1/snapshot"
+CLIP_URL = "http://eyeofthetiger.local/v1/clip"
 OLLAMA_BASE_URL = "http://localhost:11434"
 OUTPUT_DIR = Path(__file__).parent.parent / "output" / "events"
 
@@ -133,40 +131,19 @@ def classify_person(image_path: Path, model: str) -> tuple[bool, str]:
 
 
 def capture_video(event_dir: Path, duration: float) -> Path | None:
-    """Start device-side recording, wait duration seconds, stop, download the MP4."""
+    """Request a fixed-length clip from the device and download the MP4."""
+    log.info("Recording %.1fs clip …", duration)
     try:
-        resp = requests.post(RECORD_START_URL, timeout=10)
-        if resp.status_code not in (200, 201):
-            log.warning("Failed to start recording: %s", resp.status_code)
-            return None
-        log.info("Recording started. Capturing %.1fs …", duration)
-    except requests.RequestException as exc:
-        log.warning("Failed to start recording: %s", exc)
-        return None
-
-    time.sleep(duration)
-
-    try:
-        resp = requests.post(RECORD_STOP_URL, timeout=15)
+        resp = requests.get(CLIP_URL, params={"duration_s": int(duration)}, timeout=duration + 30)
         if resp.status_code != 200:
-            log.warning("Failed to stop recording: %s", resp.status_code)
-            return None
-    except requests.RequestException as exc:
-        log.warning("Failed to stop recording: %s", exc)
-        return None
-
-    log.info("Downloading clip …")
-    try:
-        resp = requests.get(RECORDING_URL, timeout=60)
-        if resp.status_code != 200:
-            log.warning("Failed to download recording: %s", resp.status_code)
+            log.warning("Failed to record clip: %s", resp.status_code)
             return None
         video_path = event_dir / "event.mp4"
         video_path.write_bytes(resp.content)
         log.info("Saved %d-byte video to %s", len(resp.content), video_path.name)
         return video_path
     except requests.RequestException as exc:
-        log.warning("Failed to download recording: %s", exc)
+        log.warning("Failed to record clip: %s", exc)
         return None
 
 
