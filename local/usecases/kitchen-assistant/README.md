@@ -27,7 +27,7 @@ EyeOfTheTiger exposes four MCP tools:
 
 - `take_snapshot`: take a fresh JPEG image.
 - `record_video`: record a fixed-length clip and return a download URL.
-- `get_configuration`: inspect the current quality setting.
+- `get_status`: inspect recording state and the current quality setting.
 - `set_quality`: change the quality preset (stills and clips).
 
 ## How the connection works

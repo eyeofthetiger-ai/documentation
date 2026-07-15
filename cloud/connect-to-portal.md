@@ -4,15 +4,7 @@ The EyeOfTheTiger portal lets you access your camera remotely — from anywhere,
 not just your local network. Once connected, you can capture images through the
 web dashboard, the REST API, or an AI assistant via the built-in MCP server.
 
-## 1. Create an account and add your camera
-
-1. Open the portal: **https://platform.eyeofthetiger.ai**
-2. Sign up using the **invite code** from your order confirmation email.
-3. On the dashboard, click **Add camera**, give it a name, and click **Add**.
-4. Copy the **Device ID** and **Device Token** — the token is shown once and
-   cannot be retrieved again.
-
-## 2. Configure your camera
+## 1. Get your camera's Device ID and Token
 
 Open your camera's setup page in a browser (it must be on the same network as
 you):
@@ -21,21 +13,40 @@ you):
 http://eyeofthetiger.local/setup
 ```
 
-Under **Remote Portal**, fill in:
+Under **Remote Portal**, your camera has already generated its own identity,
+there's nothing to configure here:
 
 | Field | Value |
 |---|---|
-| Platform URL | `wss://platform.eyeofthetiger.ai/device/ws` |
-| Device ID | The ID you copied in step 1 |
-| Device Token | The token you copied in step 1 |
-| Enable | ✓ |
+| Device ID | Generated automatically, e.g. `eot-a3f9c2d1` |
+| Device Token | Click **Show** to reveal it |
 
-Click **Save**. The status indicator should change to **Connected** within a few
-seconds.
+Copy both values. The camera already knows how to reach the platform (no
+Platform URL to set), so this page is read-only unless you're pointing a
+camera at a non-production gateway.
+
+## 2. Create an account and claim your camera
+
+1. Open the portal: **https://platform.eyeofthetiger.ai**
+2. Sign up using the **invite code** from your order confirmation email.
+3. On the dashboard, click **Add camera**, give it a name, paste in the
+   **Device ID** and **Device Token** from step 1, and click **Add**.
+
+The status indicator on the camera's setup page should change to
+**Connected** within a few seconds.
 
 ## 3. Verify in the dashboard
 
 Reload the portal dashboard. Your camera should appear as **online**.
+
+## Giving away or re-pairing a camera
+
+Selling or handing off a camera? On its setup page, click **Generate new
+token**, then have the new owner repeat steps 1 and 2 above with the fresh
+Device ID and Token to claim it under their own account. The previous owner
+loses access as soon as the new owner completes step 2, generating a new
+token on its own doesn't evict anyone until the camera is actually
+re-claimed.
 
 ---
 
@@ -55,7 +66,7 @@ curl https://platform.eyeofthetiger.ai/api/v1/cameras \
 {
   "cameras": [
     {
-      "camera_id": "cam_a1b2c3d4e5",
+      "camera_id": "eot-a3f9c2d1",
       "display_name": "Front Door",
       "status": "online",
       "last_seen": "2026-06-05T14:32:00Z"
@@ -71,7 +82,7 @@ seconds), then redirects (302) to a short-lived signed JPEG URL. The camera
 must be online.
 
 ```bash
-curl -L https://platform.eyeofthetiger.ai/api/v1/cameras/cam_a1b2c3d4e5/snapshot \
+curl -L https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/snapshot \
   -H "x-api-key: YOUR_API_KEY" \
   --fail-with-body \
   -o capture.jpg
@@ -131,5 +142,5 @@ Using eyeofthetiger, capture an image from my camera and describe what you see.
 | `list_cameras` | List all your cameras with online/offline status |
 | `take_snapshot` | Take a snapshot from a camera and return the image |
 | `record_video` | Record a fixed-length clip and return a download URL for the MP4 |
-| `get_configuration` | Return the current quality setting for a camera |
+| `get_status` | Return the full camera activity picture: recording state and current quality |
 | `set_quality` | Set the quality preset for a camera (stills and clips) |
