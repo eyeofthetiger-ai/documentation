@@ -1,0 +1,4 @@
+# test-timer: minimal on-device app, no CV/camera deps at all.
+fastapi>=0.110
+uvicorn[standard]>=0.29
+requests>=2.31

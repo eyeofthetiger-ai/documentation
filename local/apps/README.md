@@ -5,7 +5,7 @@ its own hardware — not on a separate computer. It can watch the live stream
 frame by frame, start and stop continuous recording, and report structured
 events back to the device, all with no network hop to a laptop or server.
 
-This is different from the [use cases](usecases/README.md) in this repo: a
+This is different from the [use cases](../usecases/README.md) in this repo: a
 use case is a client-side script that runs on a separate computer and polls
 the camera's HTTP API from outside. An app runs on the camera itself. Reach
 for an app when you want continuous, low-latency processing of the live
@@ -89,9 +89,9 @@ moment in the footage. Browse events on the device itself at
 
 ## Try it: a minimal example
 
-[`test-app`](https://github.com/eyeofthetiger-ai/downstream-products/tree/main/test-app)
-is the smallest possible app — no camera or computer-vision work at all,
-just timed calls into the device's own local API. Every 60 seconds it:
+[`test-app`](test-app/) is the smallest possible app — no camera or
+computer-vision work at all, just timed calls into the device's own local
+API. Every 60 seconds it:
 
 1. `POST`s `/continuous-recording/start`
 2. waits 10 seconds
@@ -102,23 +102,15 @@ just timed calls into the device's own local API. Every 60 seconds it:
 
 It exists purely to exercise the apps platform, continuous recording, and
 the events API end to end, and it's a good starting skeleton for a real app
-of your own — clone it, keep the `/status` and `Dockerfile` scaffolding, and
-swap the timer loop for whatever your app actually needs to do.
+of your own — clone [`test-app/`](test-app/), keep the `/status` and
+`Dockerfile` scaffolding, and swap the timer loop for whatever your app
+actually needs to do. See [`test-app/README.md`](test-app/README.md) for
+the install command.
 
-```bash
-tar -czf test-app-context.tar.gz -C test-app service.py requirements.txt Dockerfile .dockerignore
-
-curl -X POST http://eyeofthetiger.local/v1/apps \
-  -F 'manifest={"name":"test-app","port":8101,"command":["python","service.py","--capture-url","http://127.0.0.1:80","--port","8101"]}' \
-  -F 'context=@test-app-context.tar.gz'
-
-curl http://eyeofthetiger.local:8101/status
-```
-
-For a real computer-vision app built the same way, see
-[`buscam`](https://github.com/eyeofthetiger-ai/downstream-products/tree/main/buscam),
-a driver-drowsiness detector that reads the live stream and reports
-drowsiness events — the same platform, doing real work.
+Behind the scenes, this same platform also runs real computer-vision apps
+— for example, a driver-drowsiness detector that reads the live stream
+continuously and reports drowsiness events the same way `test-app` reports
+its ticks.
 
 ## Ideas for apps to build
 
@@ -127,8 +119,7 @@ continuous, low-latency processing of the live stream with no separate
 computer required:
 
 - **Attention / drowsiness monitor** — watch the live stream continuously
-  and flag when a driver or operator looks fatigued or distracted. This is
-  what `buscam` does.
+  and flag when a driver or operator looks fatigued or distracted.
 - **Package or parcel detector** — watch a porch or loading dock
   frame-by-frame and declare an event the moment a box appears, without
   round-tripping frames off the device.
@@ -145,7 +136,8 @@ computer required:
 
 ## See also
 
-- [Use Cases](usecases/README.md) — client-side projects that run on a
+- [`test-app/`](test-app/) — the full source for the minimal example above.
+- [Use Cases](../usecases/README.md) — client-side projects that run on a
   separate computer and poll the camera's API from outside.
 - `http://eyeofthetiger.local/docs` — the full, interactive API reference
   served by your device, including the complete apps and events schemas.
