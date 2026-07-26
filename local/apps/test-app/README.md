@@ -1,7 +1,7 @@
 # test-app
 
 A minimal on-device app for exercising the capture server's apps platform,
-continuous recording, and events API end to end — no camera or computer
+continuous recording, and events API end to end: no camera or computer
 vision work at all, just timed HTTP calls into the capture server's own
 local API. See the [Apps guide](../README.md) for how the platform itself
 works.
@@ -20,12 +20,12 @@ The event is declared *after* stopping, not before: the capture server's
 continuous-recording `stop()` blocks until the just-finished segment is
 fully closed and written to its durable index, so by the time this app
 POSTs the event, the capture server can already match it against that
-segment — every event this app produces gets a real `recording_id`/
+segment, so every event this app produces gets a real `recording_id`/
 `offset_s` instead of `null`.
 
 ## Install it
 
-From the device's Apps page (`http://eyeofthetiger.local/apps-page`) or via
+From your EOT-1's Apps page (`http://eyeofthetiger.local/apps-page`) or via
 the API:
 
 ```bash

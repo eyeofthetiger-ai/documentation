@@ -13,7 +13,7 @@ EyeOfTheTiger runs an HTTP camera server and a [Model Context Protocol (MCP)](ht
 | [Integrate with Google](integrations/integrate-with-google.md) | Connect to Google AI tools |
 | [Integrate with Ollama](integrations/integrate-with-ollama.md) | Run local models against your camera feed |
 | [Integrate with OpenClaw](integrations/integrate-with-openclaw.md) | Use EyeOfTheTiger through the OpenClaw platform |
-| [Apps](apps/README.md) | Run your own long-running program directly on the device, with events reported back to it |
+| [Apps](apps/README.md) | Run your own long-running program directly on your EOT-1, with events reported back to it |
 
 ## Getting Started
 
@@ -39,7 +39,7 @@ http://eyeofthetiger.local/docs
 
 ## Apps
 
-[`apps/`](apps/README.md) covers the on-device apps platform — your own long-running
-program, built and run directly on the camera's own hardware, watching the
-live stream and reporting structured events back to it — plus a full,
+[`apps/`](apps/README.md) covers the on-device apps platform: your own long-running
+program, built and run directly on your EOT-1's own hardware, watching the
+live stream and reporting structured events back to it, plus a full,
 ready-to-install minimal example in [`apps/test-app/`](apps/test-app/).
