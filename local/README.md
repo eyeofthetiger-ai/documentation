@@ -13,7 +13,7 @@ EyeOfTheTiger runs an HTTP camera server and a [Model Context Protocol (MCP)](ht
 | [Integrate with Google](integrations/integrate-with-google.md) | Connect to Google AI tools |
 | [Integrate with Ollama](integrations/integrate-with-ollama.md) | Run local models against your camera feed |
 | [Integrate with OpenClaw](integrations/integrate-with-openclaw.md) | Use EyeOfTheTiger through the OpenClaw platform |
-| [Apps](apps/README.md) | Run your own long-running program directly on your EOT-1, with events reported back to it |
+| [Apps](apps/README.md) | Run your own long-running program on-device **or in the cloud** (Cloud Run, scoped to one camera), with events reported back |
 
 ## Getting Started
 
@@ -39,7 +39,14 @@ http://eyeofthetiger.local/docs
 
 ## Apps
 
-[`apps/`](apps/README.md) covers the on-device apps platform: your own long-running
-program, built and run directly on your EOT-1's own hardware, watching the
-live stream and reporting structured events back to it, plus a full,
+[`apps/`](apps/README.md) covers the apps platform: your own long-running
+program on-device (built and run on your EOT-1) **or in the cloud** (a
+Cloud Run service per camera via the gateway's `CloudAppRunner`). Both watch
+the live stream and report structured events back, plus a full,
 ready-to-install minimal example in [`apps/test-app/`](apps/test-app/).
+
+## What's new since `main`
+
+- **Live stream (WHIP/WHEP via Cloudflare Stream)** — `POST /live-stream/start|stop` on-device and `POST /api/v1/cameras/:id/live-stream/start|stop` + `GET /api/v1/cameras/:id/live-stream` (WHEP URL) in the cloud. Local preview stays at `GET /live-stream.mjpg`.
+- **USB microphone** — parallel audio API (`GET /audio/clip`, `GET /audio/stream.aac`, `POST /audio/continuous-recording/*`). `GET /status` now returns `{camera, microphone}`; see `GET /status` and local `http://eyeofthetiger.local/docs` / cloud `https://platform.eyeofthetiger.ai/api/docs`.
+- **Status shape** — `camera.local_streaming` (LAN MJPEG) vs `camera.live_stream.streaming` (WHIP); `microphone.connected` gates all `audio/*` routes.

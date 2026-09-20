@@ -135,6 +135,37 @@ Once configured, try this prompt:
 Using eyeofthetiger, capture an image from my camera and describe what you see.
 ```
 
+### Audio & live-stream (REST — not MCP)
+
+MCP covers the 5 core tools above. For the new endpoints, use the REST API
+directly (same `x-api-key`):
+
+```bash
+# Audio requires a USB mic — check getStatus first
+curl https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/status \
+  -H "x-api-key: $API_KEY" | jq .status.microphone.connected
+# → true, then:
+curl -L "https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/audio/clip?duration_s=10" \
+  -H "x-api-key: $API_KEY" --fail-with-body -o clip.aac
+
+# Live-stream: device pushes WHIP to Cloudflare; you watch via WHEP
+curl -X POST https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/live-stream/start \
+  -H "x-api-key: $API_KEY"
+curl https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/live-stream \
+  -H "x-api-key: $API_KEY" # → {webrtc_playback_url, live_input_uid}
+# Open an RTCPeerConnection and POST your SDP offer to webrtc_playback_url;
+# stop with POST …/live-stream/stop when done.
+curl -X POST https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/live-stream/stop \
+  -H "x-api-key: $API_KEY"
+
+# Also: POST /audio/continuous-recording/start|stop,
+# POST /audio/continuous-recording/segment-length?segment_seconds=…,
+# POST /audio/continuous-recording/limit?max_bytes=… (one shared disk quota
+# with video), and ?kind=audio_clip|audio_continuous in library browsing.
+# Cloud apps: see [Apps](../local/apps/README.md) — CloudAppRunner (Cloud Run
+# per camera, deployment_target: cloud|both, cpu-small only).
+```
+
 ### Available tools
 
 | Tool | Description |
@@ -142,5 +173,7 @@ Using eyeofthetiger, capture an image from my camera and describe what you see.
 | `list_cameras` | List all your cameras with online/offline status |
 | `take_snapshot` | Take a snapshot from a camera and return the image |
 | `record_video` | Record a fixed-length clip and return a download URL for the MP4 |
-| `get_status` | Return the full camera activity picture: recording state and current quality |
-| `set_quality` | Set the quality preset for a camera (stills and clips) |
+| `get_status` | Full device picture — `camera` (`local_streaming`, `live_stream.streaming`, clip/continuous, quality) + `microphone` (`connected`, busy). Mirrors `GET /api/v1/cameras/:id/status` |
+| `set_quality` | Set the camera quality preset (one tier for stills + clips) |
+| `register_camera` | Pair a camera: `device_id` + `device_token` (+ optional `display_name`) |
+| `get_api_reference` | Return the REST endpoint list (also at `https://platform.eyeofthetiger.ai/api/docs`) |
