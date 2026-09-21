@@ -1,13 +1,13 @@
-# Apps: run your own code on the EOT-1 — or in the cloud
+# Apps: run your own code on the EOT-1 or in the cloud
 
-An app is a long-running program scoped to one camera. **On-device**, your
-EOT-1 builds and runs it as a Docker container — watching the live stream
-frame by frame, starting/stopping continuous recording, and reporting
-structured events back, all with no network hop. **In the cloud**, the
-platform's `CloudAppRunner` creates a dedicated Cloud Run service per
-`(cameraId, appName)` that does the same thing from the portal side — a
-single camera can have some apps on-device and others in the cloud (catalog
-entries with `deployment_target: "both"` let you pick per install).
+An app is a long-running program scoped to one camera. When running
+on-device, your EOT-1 builds and runs it as a Docker container, watching the
+live stream frame by frame, starting and stopping continuous recording, and
+reporting structured events back, all with no network hop. In the cloud, the
+platform `CloudAppRunner` creates a dedicated Cloud Run service for each
+`(cameraId, appName)` pair that does the same work from the portal side. A
+single camera can have some apps on-device and others in the cloud, and
+catalog entries with `deployment_target: "both"` let you pick per install.
 
 This is different from the [use cases](../usecases/README.md) in this repo: a
 use case is a client-side script that runs on a separate computer and polls
@@ -41,8 +41,8 @@ cloud: pulled from GHCR) with a small fixed contract:
   `CAMERA_API_KEY` / `CAMERA_ID` + `GCS_BUCKET`/`GCS_PREFIX` injected instead
   and poll the portal.
 - **Resources**: on-device is a fixed 256 MB cap, not configurable. Cloud is
-  `resource_profile: "cpu-small"` (2 vCPU / 4 GiB); `gpu-l4` is not yet wired
-  — the portal rejects it until GPU quota is provisioned.
+  `resource_profile: "cpu-small"` (2 vCPU / 4 GiB). The `gpu-l4` profile is
+  not yet configured, and the portal rejects it until GPU quota is provisioned.
 - **Dynamic controls for free**: tag an operation `"Controls"` in your own
   FastAPI/OpenAPI spec and it shows up as a button or form on the EOT-1's
   (or portal's) Apps page automatically, re-checked on every call, so this can
@@ -53,8 +53,8 @@ cloud: pulled from GHCR) with a small fixed contract:
   `name/imageRef/resourceProfile/status/error`.
 - **Deployment target**: catalog entries carry
   `deployment_target: "device" | "cloud" | "both"`. Every cloud app today
-  runs under the project's `firebase-adminsdk-fbsvc` service account — no
-  per-camera Workload Identity scoping yet.
+  runs under the project `firebase-adminsdk-fbsvc` service account. There is
+  no per-camera Workload Identity scoping yet.
 
 ## Install, manage, and monitor
 
