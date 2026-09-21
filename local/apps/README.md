@@ -1,71 +1,75 @@
-# Apps: run your own code on the EOT-1
+# Apps: run your own code on the EOT-1 or in the cloud
 
-An app is a long-running program that your EOT-1 builds and runs for you, on
-its own hardware, not on a separate computer. It can watch the live stream
-frame by frame, start and stop continuous recording, and report structured
-events back to your EOT-1, all with no network hop to a laptop or server.
+An app is a long-running program scoped to one camera. When running
+on-device, your EOT-1 builds and runs it as a Docker container, watching the
+live stream frame by frame, starting and stopping continuous recording, and
+reporting structured events back, all with no network hop. In the cloud, the
+platform creates a dedicated managed service for each camera and app pair
+that does the same work from the portal side. A single camera can have some
+apps on-device and others in the cloud, and catalog entries with
+`deployment_target: "both"` let you pick per install.
 
 This is different from the [use cases](../usecases/README.md) in this repo: a
 use case is a client-side script that runs on a separate computer and polls
-your EOT-1's HTTP API from outside. An app runs on the EOT-1 itself. Reach
-for an app when you want continuous, low-latency processing of the live
-stream, or when the processing needs to keep running even when no other
-computer is around.
+your EOT-1's HTTP API from outside. An on-device app runs *on* the EOT-1; a
+cloud app runs next to the gateway and polls the portal for that camera's
+live-stream state. Reach for an app when you want continuous, low-latency
+processing of the live stream, or when the processing needs to keep running
+even when no other computer is around.
 
 Before you start, make sure your EOT-1 is set up and on your network.
 You can verify it's reachable by visiting `http://eyeofthetiger.local/docs` in
-a browser, that's also where the full, field-by-field API reference for
-everything below lives.
+a browser, that's also where the full, field-by-field API reference lives.
+Cloud callers use `https://platform.eyeofthetiger.ai/api/docs` instead.
 
 ## The contract
 
-Every app is a Docker image, built and run by your EOT-1 itself, with a small
-fixed contract:
+Every app is a Docker image (on-device: built by the EOT-1 itself; in the
+cloud: hosted by the platform) with a small fixed contract:
 
 - **Must expose `GET /status`**: a liveness check plus whatever JSON your app
-  wants to report. Your EOT-1 never interprets it, just relays it as-is to
-  the Apps page.
+  wants to report. Your EOT-1 or the cloud service never interprets it,
+  just relays it to the Apps page or portal.
 - **May expose `POST /start` / `POST /stop`** for a soft pause and resume
-  (e.g. keep in-memory state across a pause). Your EOT-1 tries these first
-  and falls back to a hard `docker start`/`docker stop` if your app doesn't
-  implement them, or its HTTP server has hung, so lifecycle control always
-  works even if your app is broken.
-- **Runs with `--network host`**, so it reaches the capture server on
+  (e.g. keep in-memory state across a pause). On-device the server tries these
+  first and falls back to a hard `docker start`/`docker stop` if your app
+  does not implement them. In the cloud, `start` and `stop` control whether the
+  service is running or stopped.
+- **On-device runs with `--network host`**, so it reaches the capture server on
   `localhost` and exposes its own port directly on the EOT-1's address. No
-  per-app networking to configure.
-- **Gets a fixed 256 MB memory cap**, not configurable, so a runaway app
-  can never starve the capture server.
+  per-app networking to configure. Cloud apps receive their camera connection
+  details automatically and poll the portal.
+- **Resources**: on-device is a fixed 256 MB cap, not configurable. Cloud is
+  `resource_profile: "cpu-small"` (2 vCPU / 4 GiB). The `gpu-l4` profile is
+  not yet available, and the portal will reject it.
 - **Dynamic controls for free**: tag an operation `"Controls"` in your own
   FastAPI/OpenAPI spec and it shows up as a button or form on the EOT-1's
-  Apps page automatically, re-checked on every call, so this can never
-  become an open proxy into your app.
-- **Named volumes, not host paths**: declare logical volume names in your
-  manifest and your EOT-1 gives each one a directory that survives
-  uninstall/reinstall, mounted at a fixed `/data/<name>` path inside your
-  container. You never specify a host path yourself.
+  (or portal's) Apps page automatically, re-checked on every call, so this can
+  never become an open proxy into your app.
+- **Storage**: on-device uses named volumes at `/data/<name>`, kept across
+  reinstall. Cloud apps should bring their own backing store.
+- **Deployment target**: catalog entries carry
+  `deployment_target: "device" | "cloud" | "both"`. Cloud apps are scoped to the
+  camera they were installed for.
 
 ## Install, manage, and monitor
 
-Install from your EOT-1's Apps page (`http://eyeofthetiger.local/apps-page`)
-or straight over the API. Installing is a source upload, not a registry pull:
-you send a small JSON manifest plus a build-context tarball (a `Dockerfile`
-and whatever source it needs), and your EOT-1 `docker build`s it natively on
-its own architecture, no cross-compilation step required on your end.
-
 | Method | Path                       | Description                                            |
 |--------|----------------------------|----------------------------------------------------------|
-| POST   | `/v1/apps`                 | Install an app from a manifest + build-context tarball |
-| GET    | `/v1/apps`                 | List installed apps with live status                   |
+| POST   | `/v1/apps`                 | On-device: install from a manifest + build-context tarball. Cloud: install from a catalog entry (same `POST`, the gateway dispatches by `(cameraId, name)`). |
+| GET    | `/v1/apps`                 | List installed apps with live status (`deployment_target` tells you where each one runs) |
 | GET    | `/v1/apps/{name}`          | One app's status plus its dynamic controls              |
-| POST   | `/v1/apps/{name}/start`    | Start an app (soft, falling back to Docker-level)       |
-| POST   | `/v1/apps/{name}/stop`     | Stop an app (soft, falling back to Docker-level)        |
+| POST   | `/v1/apps/{name}/start`    | Start an app (on-device: soft, falling back to Docker-level; cloud: start the service) |
+| POST   | `/v1/apps/{name}/stop`     | Stop an app (on-device: soft, falling back to Docker-level; cloud: stop the service) |
 | GET    | `/v1/apps/{name}/logs`     | Stream the app's container logs                         |
-| DELETE | `/v1/apps/{name}`          | Uninstall an app (its volume data is kept)               |
+| DELETE | `/v1/apps/{name}`          | Uninstall an app (on-device volume data is kept)         |
 
-The manifest is `{"name", "port", "command", "env", "volumes"}`; `name` and
-`port` are required, the rest are optional. See
-`http://eyeofthetiger.local/docs` for the full validation rules on each
-field.
+On-device manifest is `{"name", "port", "command", "env", "volumes"}`; `name`
+and `port` are required, the rest are optional. Cloud catalog entry is
+`{"name", "imageRef", "resourceProfile", "env?"}` (currently only
+`resource_profile: "cpu-small"` is deployable). See
+`http://eyeofthetiger.local/docs` and
+`https://platform.eyeofthetiger.ai/api/docs` for the full validation rules.
 
 ## Events: telemetry your app reports
 

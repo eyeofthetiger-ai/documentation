@@ -1,8 +1,9 @@
 # Connect Your Camera to the EyeOfTheTiger Portal
 
-The EyeOfTheTiger portal lets you access your camera remotely — from anywhere,
-not just your local network. Once connected, you can capture images through the
-web dashboard, the REST API, or an AI assistant via the built-in MCP server.
+The EyeOfTheTiger portal lets you access your camera remotely, from anywhere
+you have internet access, not just your local network. Once connected, you can
+capture images through the web dashboard, the REST API, or an AI assistant via
+the built-in MCP server.
 
 ## 1. Get your camera's Device ID and Token
 
@@ -98,8 +99,8 @@ curl -L https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/snapshot \
 
 ## MCP server (for AI assistants)
 
-The portal exposes a hosted MCP server at `/api/mcp`. No local installation
-required — just add it to your AI client config with your API key.
+The portal exposes a hosted MCP server at `/api/mcp`. No local installation is
+required. Add the server to your AI client config with your API key.
 
 ### Claude Desktop
 
@@ -135,6 +136,36 @@ Once configured, try this prompt:
 Using eyeofthetiger, capture an image from my camera and describe what you see.
 ```
 
+### Audio and live-stream (REST, not MCP)
+
+The five MCP tools above cover the core operations. For the new audio and
+live-stream endpoints, use the REST API directly with the same `x-api-key`:
+
+```bash
+# Audio requires a USB microphone. Check get_status first
+curl https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/status \
+  -H "x-api-key: $API_KEY" | jq .status.microphone.connected
+# → true, then:
+curl -L "https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/audio/clip?duration_s=10" \
+  -H "x-api-key: $API_KEY" --fail-with-body -o clip.aac
+
+# Live stream: start streaming and fetch the playback URL
+curl -X POST https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/live-stream/start \
+  -H "x-api-key: $API_KEY"
+curl https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/live-stream \
+  -H "x-api-key: $API_KEY" # → playback URL for the live stream
+# Open the playback URL in a compatible viewer and stop with POST …/live-stream/stop when done.
+curl -X POST https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/live-stream/stop \
+  -H "x-api-key: $API_KEY"
+
+# Also available: POST /audio/continuous-recording/start and stop,
+# POST /audio/continuous-recording/segment-length?segment_seconds=…,
+# POST /audio/continuous-recording/limit?max_bytes=… (video and audio share
+# one disk quota), and ?kind=audio_clip|audio_continuous in library browsing.
+# Cloud apps: see [Apps](../local/apps/README.md) for cloud apps
+# (deployment_target cloud or both, cpu-small only).
+```
+
 ### Available tools
 
 | Tool | Description |
@@ -142,5 +173,7 @@ Using eyeofthetiger, capture an image from my camera and describe what you see.
 | `list_cameras` | List all your cameras with online/offline status |
 | `take_snapshot` | Take a snapshot from a camera and return the image |
 | `record_video` | Record a fixed-length clip and return a download URL for the MP4 |
-| `get_status` | Return the full camera activity picture: recording state and current quality |
-| `set_quality` | Set the quality preset for a camera (stills and clips) |
+| `get_status` | Full device picture, including `camera` (`local_streaming`, `live_stream.streaming`, clip/continuous, quality) and `microphone` (`connected`, busy). Mirrors `GET /api/v1/cameras/:id/status`. |
+| `set_quality` | Set the camera quality preset (one tier for stills + clips) |
+| `register_camera` | Pair a camera: `device_id` + `device_token` (+ optional `display_name`) |
+| `get_api_reference` | Return the REST endpoint list (also at `https://platform.eyeofthetiger.ai/api/docs`) |

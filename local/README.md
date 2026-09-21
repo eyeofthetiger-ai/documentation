@@ -1,8 +1,11 @@
 # EyeOfTheTiger Documentation
 
-Welcome to the official documentation for **EyeOfTheTiger** — an AI-ready camera that connects directly to your models out of the box.
+Welcome to the official documentation for **EyeOfTheTiger**, an AI-ready camera
+that connects directly to your models out of the box.
 
-EyeOfTheTiger runs an HTTP camera server and a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server, letting AI assistants like Claude capture images, describe scenes, detect motion, and trigger actions — all from your local network.
+EyeOfTheTiger runs an HTTP camera server and a Model Context Protocol (MCP)
+server, which let AI assistants like Claude capture images, describe scenes,
+detect motion, and trigger actions, all from your local network.
 
 ## What's Here
 
@@ -13,7 +16,7 @@ EyeOfTheTiger runs an HTTP camera server and a [Model Context Protocol (MCP)](ht
 | [Integrate with Google](integrations/integrate-with-google.md) | Connect to Google AI tools |
 | [Integrate with Ollama](integrations/integrate-with-ollama.md) | Run local models against your camera feed |
 | [Integrate with OpenClaw](integrations/integrate-with-openclaw.md) | Use EyeOfTheTiger through the OpenClaw platform |
-| [Apps](apps/README.md) | Run your own long-running program directly on your EOT-1, with events reported back to it |
+| [Apps](apps/README.md) | Run your own long-running program on-device or in the cloud, with events reported back |
 
 ## Getting Started
 
@@ -31,15 +34,34 @@ http://eyeofthetiger.local/docs
 
 ## Test the endpoints
 
-[`minimal_examples/`](minimal_examples/) has quick smoke tests (a bash script and an MCP script) that capture an image and record a short clip against your device — handy for confirming everything works.
+[`minimal_examples/`](minimal_examples/) has quick smoke tests, including a bash script
+and an MCP script that capture an image and record a short clip against your device,
+which is useful for confirming that everything works.
 
 ## Use cases
 
-[`usecases/`](usecases/) has full, ready-to-run projects built on EyeOfTheTiger — motion detection, a daily timelapse, person-spotted notifications, and more.
+[`usecases/`](usecases/) has full, ready-to-run projects built on EyeOfTheTiger,
+including motion detection, a daily timelapse, person-spotted notifications, and more.
 
 ## Apps
 
-[`apps/`](apps/README.md) covers the on-device apps platform: your own long-running
-program, built and run directly on your EOT-1's own hardware, watching the
-live stream and reporting structured events back to it, plus a full,
-ready-to-install minimal example in [`apps/test-app/`](apps/test-app/).
+[`apps/`](apps/README.md) covers the apps platform: your own long-running
+program on-device (built and run on your EOT-1) or in the cloud (a managed
+service per camera). Both watch the live stream and report structured events
+back, plus a full, ready-to-install minimal example in
+[`apps/test-app/`](apps/test-app/).
+
+## What's new since `main`
+
+- **Live stream**: `POST /live-stream/start` and `POST /live-stream/stop` on-device,
+  and `POST /api/v1/cameras/:id/live-stream/start`, `POST /api/v1/cameras/:id/live-stream/stop`,
+  and `GET /api/v1/cameras/:id/live-stream` (playback URL) in the cloud. Local preview remains at
+  `GET /live-stream.mjpg`.
+- **USB microphone**: parallel audio API with `GET /audio/clip`,
+  `GET /audio/stream.aac`, and `POST /audio/continuous-recording/*`.
+  `GET /status` now returns `{camera, microphone}`. See `GET /status` and the API
+  references at `http://eyeofthetiger.local/docs` for local and
+  `https://platform.eyeofthetiger.ai/api/docs` for cloud.
+- **Status shape**: `camera.local_streaming` is the LAN MJPEG preview and
+  `camera.live_stream.streaming` indicates whether remote live streaming is active.
+  `microphone.connected` must be true before any `audio/*` routes will succeed.

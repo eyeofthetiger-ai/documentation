@@ -8,7 +8,7 @@ it, depending on how much control you want and where your AI agents run.
 
 ## Quick Start
 
-We recommend starting with **local** — it's free to prototype and quick to get set up.
+We recommend starting with **local**, which is free to prototype and quick to get set up.
 
 1. **Plug in your Eye of the Tiger** and wait for the **EyeOfTheTiger-Setup** Wi-Fi network to appear.
 2. **Connect your laptop or mobile** to the EyeOfTheTiger-Setup network using the Wi-Fi password from your order confirmation email.
@@ -24,13 +24,14 @@ the [cloud documentation](cloud/README.md) covers everything you need.
 ## Local
 
 Your camera and your AI agent are on the same network. The agent talks directly
-to the camera over HTTP or MCP — no cloud, no middleman, no account required.
+to the camera over HTTP or MCP. There is no cloud, no middleman, and no account
+required.
 
 **Pros**
-- Free forever — no subscription, no usage limits
+- Free forever with no subscription and no usage limits
 - Complete control over your data; images never leave your network
 - Works without an internet connection
-- Lower latency — direct LAN connection to the camera
+- Lower latency through a direct LAN connection to the camera
 
 **Cons**
 - Your agent must be on the same network as the camera (or connected via VPN)
@@ -44,8 +45,8 @@ to the camera over HTTP or MCP — no cloud, no middleman, no account required.
 ## Cloud
 
 Your camera connects outbound to the EyeOfTheTiger platform. Your AI agents
-connect to the platform from anywhere — no VPN, no port-forwarding, no local
-setup beyond the camera itself.
+connect to the platform from anywhere with no VPN, no port forwarding, and no
+local setup beyond the camera itself.
 
 **Pros**
 - Access your camera from anywhere in the world
