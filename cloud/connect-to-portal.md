@@ -149,13 +149,12 @@ curl https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/status \
 curl -L "https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/audio/clip?duration_s=10" \
   -H "x-api-key: $API_KEY" --fail-with-body -o clip.aac
 
-# Live stream: device pushes WHIP to Cloudflare and you watch via WHEP
+# Live stream: start streaming and fetch the playback URL
 curl -X POST https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/live-stream/start \
   -H "x-api-key: $API_KEY"
 curl https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/live-stream \
-  -H "x-api-key: $API_KEY" # → {webrtc_playback_url, live_input_uid}
-# Open an RTCPeerConnection and POST your SDP offer to webrtc_playback_url;
-# stop with POST …/live-stream/stop when done.
+  -H "x-api-key: $API_KEY" # → playback URL for the live stream
+# Open the playback URL in a compatible viewer and stop with POST …/live-stream/stop when done.
 curl -X POST https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/live-stream/stop \
   -H "x-api-key: $API_KEY"
 
@@ -163,8 +162,8 @@ curl -X POST https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/live-
 # POST /audio/continuous-recording/segment-length?segment_seconds=…,
 # POST /audio/continuous-recording/limit?max_bytes=… (video and audio share
 # one disk quota), and ?kind=audio_clip|audio_continuous in library browsing.
-# Cloud apps: see [Apps](../local/apps/README.md) for CloudAppRunner (Cloud Run
-# per camera, deployment_target cloud or both, cpu-small only).
+# Cloud apps: see [Apps](../local/apps/README.md) for cloud apps
+# (deployment_target cloud or both, cpu-small only).
 ```
 
 ### Available tools

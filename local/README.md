@@ -16,7 +16,7 @@ detect motion, and trigger actions, all from your local network.
 | [Integrate with Google](integrations/integrate-with-google.md) | Connect to Google AI tools |
 | [Integrate with Ollama](integrations/integrate-with-ollama.md) | Run local models against your camera feed |
 | [Integrate with OpenClaw](integrations/integrate-with-openclaw.md) | Use EyeOfTheTiger through the OpenClaw platform |
-| [Apps](apps/README.md) | Run your own long-running program on-device **or in the cloud** (Cloud Run, scoped to one camera), with events reported back |
+| [Apps](apps/README.md) | Run your own long-running program on-device or in the cloud, with events reported back |
 
 ## Getting Started
 
@@ -46,22 +46,22 @@ including motion detection, a daily timelapse, person-spotted notifications, and
 ## Apps
 
 [`apps/`](apps/README.md) covers the apps platform: your own long-running
-program on-device (built and run on your EOT-1) **or in the cloud** (a
-Cloud Run service per camera via the gateway's `CloudAppRunner`). Both watch
-the live stream and report structured events back, plus a full,
-ready-to-install minimal example in [`apps/test-app/`](apps/test-app/).
+program on-device (built and run on your EOT-1) or in the cloud (a managed
+service per camera). Both watch the live stream and report structured events
+back, plus a full, ready-to-install minimal example in
+[`apps/test-app/`](apps/test-app/).
 
 ## What's new since `main`
 
-- **Live stream (WHIP/WHEP via Cloudflare Stream)**: `POST /live-stream/start` and
-  `POST /live-stream/stop` on-device, and `POST /api/v1/cameras/:id/live-stream/start`,
-  `POST /api/v1/cameras/:id/live-stream/stop`, and `GET /api/v1/cameras/:id/live-stream`
-  (WHEP URL) in the cloud. Local preview remains at `GET /live-stream.mjpg`.
+- **Live stream**: `POST /live-stream/start` and `POST /live-stream/stop` on-device,
+  and `POST /api/v1/cameras/:id/live-stream/start`, `POST /api/v1/cameras/:id/live-stream/stop`,
+  and `GET /api/v1/cameras/:id/live-stream` (playback URL) in the cloud. Local preview remains at
+  `GET /live-stream.mjpg`.
 - **USB microphone**: parallel audio API with `GET /audio/clip`,
   `GET /audio/stream.aac`, and `POST /audio/continuous-recording/*`.
   `GET /status` now returns `{camera, microphone}`. See `GET /status` and the API
   references at `http://eyeofthetiger.local/docs` for local and
   `https://platform.eyeofthetiger.ai/api/docs` for cloud.
 - **Status shape**: `camera.local_streaming` is the LAN MJPEG preview and
-  `camera.live_stream.streaming` is the WHIP push. `microphone.connected` must be
-  true before any `audio/*` routes will succeed.
+  `camera.live_stream.streaming` indicates whether remote live streaming is active.
+  `microphone.connected` must be true before any `audio/*` routes will succeed.

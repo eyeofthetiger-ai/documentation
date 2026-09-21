@@ -10,15 +10,13 @@ port forwarding is required.
 |---|---|
 | [Connect to the Portal](connect-to-portal.md) | Link your camera, get an API key, test with curl and MCP |
 | [Minimal examples](minimal_examples/) | Smoke-test every endpoint (bash + MCP): snapshot, clip, **audio clip**, **live-stream**, status, library, usage |
-| [Apps (cloud)](../local/apps/README.md#the-contract) | `CloudAppRunner`: Cloud Run apps scoped to one camera (`deployment_target: cloud` or `both`, `cpu-small` only) |
+| [Apps (cloud)](../local/apps/README.md#the-contract) | Cloud apps scoped to one camera (`deployment_target: cloud` or `both`, `cpu-small` only) |
 
-## Live-stream and audio
+## Live streaming and audio
 
-- The cloud gateway now brokers WHIP/WHEP live streaming via Cloudflare Stream
-  (`src/devices/cloudAppRunner.ts`, `portal:LiveStreamPlayer.tsx`). Use
+- Live streaming for remote viewing is now available. Use
   `POST /api/v1/cameras/:id/live-stream/start` and `stop`, and
-  `GET /api/v1/cameras/:id/live-stream` for the WHEP URL. No bytes flow through
-  the gateway or portal.
+  `GET /api/v1/cameras/:id/live-stream` for the playback URL.
 - USB microphone support is now available end to end. This includes
   `GET /api/v1/cameras/:id/audio/clip`, `POST /api/v1/cameras/:id/audio/continuous-recording/*`,
   and `?kind=audio_clip|audio_continuous` in the library. Check
