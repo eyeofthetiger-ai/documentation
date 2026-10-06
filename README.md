@@ -10,10 +10,15 @@ it, depending on how much control you want and where your AI agents run.
 
 We recommend starting with **local**, which is free to prototype and quick to get set up.
 
-1. **Plug in your Eye of the Tiger** and wait for the **EyeOfTheTiger-Setup** Wi-Fi network to appear.
+1. **Plug in your Eye of the Tiger** and wait for the **EyeOfTheTiger-Setup** Wi-Fi network to appear. The EOT-1 keeps broadcasting it after setup too, so you can always reach it, even if you move it or your Wi-Fi drops.
 2. **Connect your laptop or mobile** to the EyeOfTheTiger-Setup network using the Wi-Fi password from your order confirmation email.
 3. **Open `eyeofthetiger.local/setup`** in your browser to select your home Wi-Fi network.
 4. **Choose an integration** to get going.
+
+> **Good to know:** the EyeOfTheTiger-Setup network runs on the same Wi-Fi
+> channel as your home network (5GHz when available), so using both at once
+> can slow uploads a little. You can turn it off from the Wi-Fi page
+> (**Setup hotspot** toggle) if your EOT-1 is only ever used over Ethernet.
 
 Once you're up and running, head to the [local documentation](local/README.md) for
 integration guides and examples. When you're ready to access your camera remotely,
