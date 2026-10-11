@@ -9,7 +9,7 @@ import httpx
 from mcp.client.session import ClientSession
 from mcp.client.streamable_http import streamablehttp_client
 
-PORTAL = "https://portal-598626659536.europe-west2.run.app"
+PORTAL = "https://platform.eyeofthetiger.ai"
 
 _env_file = Path(__file__).parent.parent / ".env"
 _env_example = _env_file.parent / ".env.example"

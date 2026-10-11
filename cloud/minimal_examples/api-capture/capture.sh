@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Capture a still image from your camera via the platform, saved as image.jpg.
 
-PORTAL="https://portal-598626659536.europe-west2.run.app"
+PORTAL="https://platform.eyeofthetiger.ai"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_FILE="$SCRIPT_DIR/../.env"

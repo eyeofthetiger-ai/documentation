@@ -2,7 +2,7 @@
 # Record a 10-second audio clip from your EOT-1's USB microphone via the platform, saved as recording.aac.
 # Returns 503 if no microphone is attached (check microphone.connected in GET .../status).
 
-PORTAL="https://portal-598626659536.europe-west2.run.app"
+PORTAL="https://platform.eyeofthetiger.ai"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_FILE="$SCRIPT_DIR/../.env"

@@ -2,7 +2,7 @@
 # Start your EOT-1's live stream via the platform and save its WebRTC (WHEP)
 # playback URL to whep.txt. Open that URL in a WHEP-capable player to watch.
 
-PORTAL="https://portal-598626659536.europe-west2.run.app"
+PORTAL="https://platform.eyeofthetiger.ai"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_FILE="$SCRIPT_DIR/../.env"
