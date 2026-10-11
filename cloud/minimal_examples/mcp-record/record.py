@@ -36,13 +36,13 @@ async def main():
     async with streamablehttp_client(f"{PORTAL}/api/mcp", headers=headers) as (read, write, _):
         async with ClientSession(read, write) as session:
             await session.initialize()
-            # record_video returns a download URL, not the video itself.
+            # record_clip returns a download URL, not the video itself.
             result = await session.call_tool(
-                "record_video", {"camera_id": CAMERA_ID, "duration_s": 10}
+                "record_clip", {"camera_id": CAMERA_ID, "duration_s": 10}
             )
 
     url = json.loads(result.content[0].text)["download_url"]
-    clip = httpx.get(url, headers=headers, follow_redirects=True).content
+    clip = httpx.get(url, follow_redirects=True, timeout=60).content
     with open("recording.mp4", "wb") as f:
         f.write(clip)
     print("Saved recording.mp4")

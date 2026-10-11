@@ -10,10 +10,11 @@ use the platform's developer API, so they work from anywhere.
 | [`api-audio/`](api-audio/) | `capture.sh` → `GET /api/v1/cameras/{id}/audio/clip` → `recording.aac` *(requires USB microphone; returns 503 if `microphone.connected` is false)* |
 | [`api-live-stream/`](api-live-stream/) | `stream.sh` → `POST /api/v1/cameras/{id}/live-stream/start` and `GET …/live-stream` (playback URL) → `whep.txt` |
 | [`mcp-capture/`](mcp-capture/) | `capture.py` → MCP `take_snapshot` → `image.jpg` |
-| [`mcp-record/`](mcp-record/) | `record.py` → MCP `record_video` → `recording.mp4` |
+| [`mcp-record/`](mcp-record/) | `record.py` → MCP `record_clip` → `recording.mp4` |
+| [`mcp-audio/`](mcp-audio/) | `record.py` → MCP `record_audio_clip` → `recording.aac` *(same mic gate)* |
 
-Each script has three values to edit at the top: `PORTAL`, `API_KEY` (your
-`eott_` key from the portal **Settings** page), and `CAMERA_ID`. Check
+Copy `.env.example` to `.env` and fill in `API_KEY` (your `eott_` key from the
+portal **Settings** page) and `CAMERA_ID`; every script reads it. Check
 `GET /api/v1/cameras/:id/status` first. `microphone.connected` must be true for
 `api-audio`, and starting a live stream provides a playback URL that you can use
 to watch the stream.
