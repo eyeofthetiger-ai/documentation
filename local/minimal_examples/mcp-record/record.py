@@ -17,8 +17,8 @@ async def main():
     async with streamablehttp_client(f"{DEVICE}/mcp/") as (read, write, _):
         async with ClientSession(read, write) as session:
             await session.initialize()
-            # record_video returns a download URL, not the video itself.
-            result = await session.call_tool("record_video", {"duration_s": 10})
+            # record_clip returns a download URL, not the video itself.
+            result = await session.call_tool("record_clip", {"duration_s": 10})
 
     url = json.loads(result.content[0].text)["download_url"]
     clip = httpx.get(url, timeout=60).content

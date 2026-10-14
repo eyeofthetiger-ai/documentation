@@ -23,12 +23,15 @@ photo every two minutes or continuously detecting motion. This example is
 different: your AI model decides when to use the camera while helping you
 with an open-ended task.
 
-EyeOfTheTiger exposes four MCP tools:
+The tools this example relies on:
 
 - `take_snapshot`: take a fresh JPEG image.
-- `record_video`: record a fixed-length clip and return a download URL.
+- `record_clip`: record a fixed-length clip and return a download URL.
 - `get_status`: inspect recording state and the current quality setting.
 - `set_quality`: change the quality preset (stills and clips).
+
+The EOT-1 also has tools for audio clips, continuous recording, browsing past
+captures and events, and device health; `get_api_reference` lists the REST API.
 
 ## How the connection works
 

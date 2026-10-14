@@ -136,10 +136,10 @@ Once configured, try this prompt:
 Using eyeofthetiger, capture an image from my camera and describe what you see.
 ```
 
-### Audio and live-stream (REST, not MCP)
+### Audio and live stream over REST
 
-The five MCP tools above cover the core operations. For the new audio and
-live-stream endpoints, use the REST API directly with the same `x-api-key`:
+Audio clips and continuous audio recording are MCP tools too (see the table
+below). Live streaming is REST only. With the same `x-api-key`:
 
 ```bash
 # Audio requires a USB microphone. Check get_status first
@@ -168,12 +168,27 @@ curl -X POST https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/live-
 
 ### Available tools
 
-| Tool | Description |
-|---|---|
-| `list_cameras` | List all your cameras with online/offline status |
-| `take_snapshot` | Take a snapshot from a camera and return the image |
-| `record_video` | Record a fixed-length clip and return a download URL for the MP4 |
-| `get_status` | Full device picture, including `camera` (`local_streaming`, `live_stream.streaming`, clip/continuous, quality) and `microphone` (`connected`, busy). Mirrors `GET /api/v1/cameras/:id/status`. |
-| `set_quality` | Set the camera quality preset (one tier for stills + clips) |
-| `register_camera` | Pair a camera: `device_id` + `device_token` (+ optional `display_name`) |
-| `get_api_reference` | Return the REST endpoint list (also at `https://platform.eyeofthetiger.ai/api/docs`) |
+Tool names follow the REST paths: the tool for `/clip` is `record_clip`, and
+the tool for `/audio/clip` is `record_audio_clip`. Every camera tool takes the
+`camera_id` from `list_cameras`. Replies are JSON; video and audio come back
+as short-lived signed download URLs.
+
+| Tool | REST equivalent | Description |
+|---|---|---|
+| `list_cameras` | `GET /api/v1/cameras` | List all your cameras with online/offline status |
+| `register_camera` | `POST /api/v1/cameras` | Pair a camera: `device_id` + `device_token` (+ optional `display_name`) |
+| `get_status` | `GET …/status` | Full device picture: `camera` (`local_streaming`, `live_stream.streaming`, clip/continuous, quality) and `microphone` (`connected`, busy) |
+| `set_quality` | `POST …/quality` | Set the quality preset (`high`, `medium`, `low`; one tier for stills and clips) |
+| `take_snapshot` | `GET …/snapshot` | Take a snapshot and return the image (`full: true` for a 12 MP photo) |
+| `record_clip` | `GET …/clip` | Record a fixed-length video clip and return a download URL for the MP4 |
+| `record_audio_clip` | `GET …/audio/clip` | Record a fixed-length clip from the USB microphone and return a download URL for the AAC |
+| `start_continuous_recording` / `stop_continuous_recording` | `POST …/continuous-recording/start` / `stop` | Indefinite video recording in segments that join the library |
+| `start_audio_continuous_recording` / `stop_audio_continuous_recording` | `POST …/audio/continuous-recording/start` / `stop` | The same for the microphone, independent of video |
+| `list_library` | `GET …/library` | Uploaded captures, newest first, filterable by kind, date and time of day |
+| `get_library_entry` | `GET …/library/{date}/{time}` | One capture: snapshots come back as the image, video and audio as a download URL |
+| `get_library_at` | `GET …/library/at` | The continuous segment covering a moment, plus the offset into it |
+| `list_events` | `GET …/events` | Events raised by on-device apps, linked to the covering recording |
+| `get_system_info` | `GET …/system/temperature`, `memory`, `cpu` | Device health in one call |
+| `get_api_reference` | | The REST endpoint list (also at `https://platform.eyeofthetiger.ai/api/docs`) |
+
+`…` is `/api/v1/cameras/{camera_id}`.
