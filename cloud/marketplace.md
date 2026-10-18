@@ -118,6 +118,9 @@ repository. It must:
 - **Send your own `User-Agent` header on API calls**, e.g. `my-app/1.0`.
   The platform's firewall blocks Python's default `Python-urllib` user agent
   with a 403. Other HTTP libraries' defaults get through.
+- **Connect to the platform over IPv4.** From Cloud Run, connections to the
+  platform's IPv6 addresses sometimes hang until they time out. The template
+  resolves IPv4 addresses only (see the top of its `app.py`).
 - **Keep its own data elsewhere if it needs to persist anything.** The
   container's disk is wiped whenever the app stops.
 
