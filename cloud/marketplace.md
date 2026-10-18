@@ -38,6 +38,11 @@ You need an EyeOfTheTiger account with at least one EOT-1 added to it.
    **Open** it (if it has its own page), **Start**, **Stop**, view **Logs** or
    **Delete** it.
 
+**To check that apps work on your account**, install **Hello, world - test
+app** and click **Open** next to it. You should see your EOT-1's live stream
+with "Hello, world." written over it. It runs on the cheapest cloud size, so
+stop it when you're done.
+
 You can also install from an EOT-1's own page: its apps section lists the
 library, and **Buy** and **Install** work the same way there.
 
@@ -110,11 +115,14 @@ repository. It must:
   With these, your app calls the same API described in
   [Connect to the Portal](connect-to-portal.md), for example
   `GET $CAMERA_API_URL/api/v1/cameras/$CAMERA_ID/snapshot`.
+- **Send your own `User-Agent` header on API calls**, e.g. `my-app/1.0`.
+  The platform's firewall blocks Python's default `Python-urllib` user agent
+  with a 403. Other HTTP libraries' defaults get through.
 - **Keep its own data elsewhere if it needs to persist anything.** The
   container's disk is wiped whenever the app stops.
 
-**If your app serves its own web page**, the portal shows it inside the
-EOT-1's page when the customer clicks **Open**. Your app's address is
+**If your app serves its own web page**, clicking **Open** in the portal
+starts the EOT-1's live stream and opens your app in a new tab. Your app's address is
 reachable from the internet, so it must check the token the portal adds to
 the URL (`?token=...`) on every request except a health check. The token is
 `<payload>.<signature>`: the payload is base64url JSON
@@ -144,28 +152,35 @@ def token_ok(token: str | None) -> bool:
 
 ### 2. Start from the example
 
-[`hello-cloud-app/`](hello-cloud-app/) is the smallest app that works: once a
-minute it checks the customer's EOT-1 through the API and reports the result
-on `GET /status`. It uses only Python's standard library.
+[eyeofthetiger-ai/hello-world-app](https://github.com/eyeofthetiger-ai/hello-world-app)
+is a complete app to copy: it shows the customer's live stream with "Hello,
+world." over it, checks the token, and keeps the API key on the server. It's
+the **Hello, world - test app** in the library, and uses only Python's
+standard library.
 
-1. Create a new **public** GitHub repository and copy `app.py` and
-   `Dockerfile` from [`hello-cloud-app/`](hello-cloud-app/) into its root.
+1. On GitHub, open
+   [hello-world-app](https://github.com/eyeofthetiger-ai/hello-world-app),
+   click **Use this template** → **Create a new repository**, and make it
+   **public**.
 2. Try it locally with an API key from the portal (gear menu → **API keys**)
-   and one of your EOT-1 ids:
+   and one of your EOT-1 ids. Without `EMBED_TOKEN_SECRET` the token check is
+   off.
 
    ```bash
-   docker build -t hello-cloud-app .
+   docker build -t my-app .
    docker run --rm -p 8080:8080 \
      -e CAMERA_API_URL=https://platform.eyeofthetiger.ai \
      -e CAMERA_API_KEY=YOUR_API_KEY \
      -e CAMERA_ID=eot-a3f9c2d1 \
-     hello-cloud-app
-   curl http://localhost:8080/status
+     my-app
    ```
 
-   You should see `"camera_reachable": true` within a few seconds.
-3. Replace the polling loop with what your app should actually do, keeping
-   the `/status` handler and the `Dockerfile`. Push to GitHub.
+   Start a live stream from your EOT-1's page in the portal, then open
+   http://localhost:8080. You should see the stream with "Hello, world." on
+   it.
+3. Change it to do what your app should do, keeping the token check,
+   `/status` and the `Dockerfile`. Run its tests with
+   `python -m unittest test_app`, then push to GitHub.
 
 ### 3. Submit it
 
@@ -180,8 +195,8 @@ on `GET /status`. It uses only Python's standard library.
    | **Maker name** | Your name or company, shown on the tile. |
    | **Public GitHub repository** | e.g. `https://github.com/you/your-app` |
    | **Branch, tag or commit** | Optional. Blank means the default branch. |
-   | **Port your container listens on** | The port from step 1 (the example uses 8080). |
-   | **Resources** | `cpu-small` (2 vCPU, 4 GiB) or `gpu-l4` (4 vCPU, 16 GiB, NVIDIA L4 GPU). Customers pay for these per hour while your app runs, so pick the smallest that works. |
+   | **Port your container listens on** | The port from step 1 (the template uses 8080). |
+   | **Resources** | `cpu-tiny` (1 vCPU, 512 MiB), `cpu-small` (2 vCPU, 4 GiB) or `gpu-l4` (4 vCPU, 16 GiB, NVIDIA L4 GPU). Customers pay for these per hour while your app runs, so pick the smallest that works. |
    | **Price customers pay, one-off** | In pounds, including VAT. Leave blank for free. The minimum is £0.30. |
    | **Logo** | Optional. PNG, JPEG or WebP, up to 256 KB, ideally square. Without one, the tile shows your app's first letter. |
    | **My app serves its own web page** | Tick if customers should be able to **Open** it (see the token check above). |

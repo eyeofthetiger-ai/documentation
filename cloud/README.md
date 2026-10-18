@@ -10,8 +10,8 @@ port forwarding is required.
 |---|---|
 | [Connect to the Portal](connect-to-portal.md) | Link your camera, get an API key, test with curl and MCP |
 | [Minimal examples](minimal_examples/) | Smoke-test every endpoint (bash + MCP): snapshot, clip, **audio clip**, **live-stream**, status, library, usage |
-| [App library](marketplace.md) | Install apps from the portal's Apps page, pay with credits, and publish your own app step by step |
-| [Apps (cloud)](../local/apps/README.md#the-contract) | Cloud apps scoped to one camera (`deployment_target: cloud` or `both`, `cpu-small` or `gpu-l4`) |
+| [App library](marketplace.md) | Install apps from the portal's Apps page, pay with credits, and publish your own app step by step, starting from the [Hello, world template](https://github.com/eyeofthetiger-ai/hello-world-app) |
+| [Apps (cloud)](../local/apps/README.md#the-contract) | Cloud apps scoped to one camera (`deployment_target: cloud` or `both`, `cpu-tiny`, `cpu-small` or `gpu-l4`) |
 
 ## Live streaming and audio
 
