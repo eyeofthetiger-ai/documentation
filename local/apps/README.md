@@ -40,8 +40,9 @@ cloud: hosted by the platform) with a small fixed contract:
   per-app networking to configure. Cloud apps receive their camera connection
   details automatically and poll the portal.
 - **Resources**: on-device is a fixed 256 MB cap, not configurable. Cloud is
-  `resource_profile: "cpu-small"` (2 vCPU / 4 GiB). The `gpu-l4` profile is
-  not yet available, and the portal will reject it.
+  `resource_profile: "cpu-small"` (2 vCPU / 4 GiB) or `"gpu-l4"` (4 vCPU /
+  16 GiB / NVIDIA L4 GPU), billed per hour from the organisation's credits
+  while the app runs.
 - **Dynamic controls for free**: tag an operation `"Controls"` in your own
   FastAPI/OpenAPI spec and it shows up as a button or form on the EOT-1's
   (or portal's) Apps page automatically, re-checked on every call, so this can
@@ -66,8 +67,8 @@ cloud: hosted by the platform) with a small fixed contract:
 
 On-device manifest is `{"name", "port", "command", "env", "volumes"}`; `name`
 and `port` are required, the rest are optional. Cloud catalog entry is
-`{"name", "imageRef", "resourceProfile", "env?"}` (currently only
-`resource_profile: "cpu-small"` is deployable). See
+`{"name", "imageRef", "resourceProfile", "env?"}` (`resource_profile` is
+`"cpu-small"` or `"gpu-l4"`). See
 `http://eyeofthetiger.local/docs` and
 `https://platform.eyeofthetiger.ai/api/docs` for the full validation rules.
 
@@ -140,6 +141,8 @@ computer required:
 
 ## See also
 
+- [The app library](../../cloud/marketplace.md): install apps from the
+  portal's Apps page, pay with credits, and publish your own cloud app.
 - [`test-app/`](test-app/): the full source for the minimal example above.
 - [Use Cases](../usecases/README.md): client-side projects that run on a
   separate computer and poll your EOT-1's API from outside.
