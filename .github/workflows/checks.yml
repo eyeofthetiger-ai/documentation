@@ -1,0 +1,26 @@
+# Same checks as .pre-commit-config.yaml, for commits made without the hooks installed.
+name: checks
+on:
+  pull_request:
+  push:
+    branches: [main, dev]
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    container: ghcr.io/gitleaks/gitleaks:v8.30.1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - run: gitleaks git --redact -v .
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pre-commit
+      # gitleaks only scans staged files as a hook, so the job above covers it.
+      - run: SKIP=gitleaks pre-commit run --all-files --show-diff-on-failure

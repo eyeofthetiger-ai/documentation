@@ -313,7 +313,7 @@
       }
 
       if (events.length > 0) newestKnownId = events[0].id;
-    } catch (_) { /* stream or server blip — try again next tick */ }
+    } catch (_) { /* stream or server blip, try again next tick */ }
   }
 
   setInterval(pollEvents, 5000);

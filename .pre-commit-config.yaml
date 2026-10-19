@@ -1,0 +1,24 @@
+# Install once per clone: pip install pre-commit && pre-commit install
+# CI runs the same gitleaks scan, so skipping hooks locally won't skip the check.
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: detect-private-key
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: local
+    hooks:
+      - id: no-em-dashes
+        name: no em dashes
+        language: pygrep
+        entry: '\xe2\x80\x94'  # em dash as UTF-8 bytes, escaped so this file passes
+        types: [text]

@@ -59,7 +59,7 @@ EyeOfTheTiger server. The app must run on this client computer.
 For recording clips after motion is detected, use the EyeOfTheTiger clip
 endpoint (called from this client):
 
-  GET http://eyeofthetiger.local/v1/clip?duration_s=<seconds> — record a clip
+  GET http://eyeofthetiger.local/v1/clip?duration_s=<seconds>: record a clip
   (blocks while the device records) and return the finished MP4
 
 Build the project in two stages. Follow each stage exactly. Do not start stage

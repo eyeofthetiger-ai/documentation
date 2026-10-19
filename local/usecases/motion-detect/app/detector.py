@@ -24,7 +24,7 @@ running = True
 
 def handle_sigint(sig, frame):
     global running
-    print("\n[detector] Ctrl-C received — shutting down.")
+    print("\n[detector] Ctrl-C received, shutting down.")
     running = False
 
 

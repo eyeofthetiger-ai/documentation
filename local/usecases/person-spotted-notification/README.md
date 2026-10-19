@@ -43,8 +43,8 @@ messages before running this project.
    Spotter") and choose your workspace.
 2. In the left sidebar go to **OAuth & Permissions**. Under **Bot Token
    Scopes** add:
-   - `chat:write` — post messages
-   - `files:write` — upload images
+   - `chat:write`: post messages
+   - `files:write`: upload images
 3. Scroll to the top of **OAuth & Permissions** and click **Install to
    Workspace**, then **Allow**.
 4. Copy the **Bot User OAuth Token** (it starts with `xoxb-`). This is your
@@ -97,7 +97,7 @@ after motion is detected. When a person is confirmed, record a video clip using
 the EyeOfTheTiger clip endpoint and post it to Slack.
 
 Clip endpoint (called from this client):
-  GET http://eyeofthetiger.local/v1/clip?duration_s=<seconds> — record a clip
+  GET http://eyeofthetiger.local/v1/clip?duration_s=<seconds>: record a clip
   (blocks while the device records) and return the finished MP4
 
 Build the project in two stages. Follow each stage exactly. Do not start stage
@@ -305,5 +305,5 @@ Raise the cooldown if you are getting repeated Slack notifications from the same
 person standing still.
 
 If the model is misclassifying, try a more capable vision model. Some smaller
-models may not reliably return valid JSON — a larger model or one fine-tuned for
+models may not reliably return valid JSON; a larger model or one fine-tuned for
 instruction following will behave more consistently.

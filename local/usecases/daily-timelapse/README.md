@@ -1,6 +1,6 @@
 # Daily Time-lapse Creator
 
-A pure-API project that captures frames from the EyeOfTheTiger throughout the day and stitches them into an MP4 at midnight. The finished video can either be uploaded to Google Drive or saved to a local directory — your choice. No AI model required — the camera is used as a plain data source.
+A pure-API project that captures frames from the EyeOfTheTiger throughout the day and stitches them into an MP4 at midnight. The finished video can either be uploaded to Google Drive or saved to a local directory, your choice. No AI model required, the camera is used as a plain data source.
 
 We have included the code created by pasting the instructions below into Claude
 Code in the [`app/`](app/) folder.
@@ -39,22 +39,22 @@ cron (00:05 daily)
 Paste the following prompt into your agent (e.g. Claude Code) to have it create the project for you:
 
 ```
-Build a daily time-lapse system in two stages. Follow each stage exactly — do not
+Build a daily time-lapse system in two stages. Follow each stage exactly; do not
 start stage 2 until I confirm stage 1 is working.
 
 ---
 
-STAGE 1 — Create and test the capture script
+STAGE 1: Create and test the capture script
 
 1. Create a folder called `app` in the same directory as this README. Create an
    `output` folder alongside it, with subfolders called `frames` and `timelapse`.
 
-2. Create app/capture.sh — a shell script that:
+2. Create app/capture.sh: a shell script that:
    - Fetches a JPEG from http://eyeofthetiger.local/v1/snapshot using curl.
    - Saves it to output/frames/$(date +%Y-%m-%d)/$(date +%H-%M).jpg.
 
 3. Run app/capture.sh once to grab a test frame using `bash app/capture.sh` (no chmod
-   needed — always invoke it with bash directly), then open the saved JPEG so I
+   needed, always invoke it with bash directly), then open the saved JPEG so I
    can see it (use xdg-open on Linux, open on macOS).
 
 4. Ask me: "Does the image look correct? Should I proceed to set up scheduling
@@ -64,16 +64,16 @@ STAGE 1 — Create and test the capture script
 
 ---
 
-STAGE 2 — Scheduling and stitching (only if I said yes above)
+STAGE 2: Scheduling and stitching (only if I said yes above)
 
 Before writing any further code, ask me one question:
 
-  "Where should the finished time-lapse MP4 be stored — uploaded to Google Drive,
+  "Where should the finished time-lapse MP4 be stored, uploaded to Google Drive,
    or saved to a local output folder (output/timelapse)?"
 
 Wait for my answer, then build the stiching script:
 
-app/stitch.sh — a shell script that:
+app/stitch.sh: a shell script that:
    - Takes an optional date argument (default: yesterday, formatted YYYY-MM-DD).
    - Runs ffmpeg to combine all JPEGs in output/frames/<date>/ into a time-lapse MP4
      at 24fps named <date>.mp4 in output/timelapse/.
@@ -89,14 +89,14 @@ Next tell me the following:
   "Important: do not try to test app/stitch.sh yet. At 2-minute capture intervals
    and 24 fps output, the video will be invisible to most players until at least
    24 frames have accumulated (roughly 4 hours of capture). A full day produces
-   ~90 frames — about 4 seconds of video. Set up the crontab now and run
+   ~90 frames, about 4 seconds of video. Set up the crontab now and run
    app/stitch.sh manually tomorrow morning to verify the first full timelapse."
 
 ---
 
 IF the user chose Google Drive, additionally build:
 
-3. app/upload.py — a Python script that:
+3. app/upload.py: a Python script that:
    - Accepts a file path as a command-line argument.
    - Uploads the file to a Google Drive folder whose ID is in the environment variable
      GOOGLE_DRIVE_FOLDER_ID, using a service account key at the path in
