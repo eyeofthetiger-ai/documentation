@@ -66,3 +66,15 @@ local setup beyond the camera itself.
 - Images pass through the EyeOfTheTiger platform on the way to your agent
 
 → **[Cloud documentation](cloud/README.md)**
+
+---
+
+## Apps
+
+An app gives your EOT-1 a job and keeps doing it, with no computer left
+switched on: watching the live stream, recording, and reporting what it
+finds. Apps run on the EOT-1 itself or in the cloud.
+
+→ **[Apps](local/apps/README.md)**: what apps are, where they run, and how to build one
+
+→ **[Marketplace](cloud/marketplace.md)**: install ready-made apps, pay with credits, and publish your own
