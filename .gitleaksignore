@@ -1,0 +1,17 @@
+# Historical findings reviewed 2026-10-19: Cloud Run URLs in old branch commits, no credentials.
+ffb20cf0f9c90432ea3434641fc350a4fa9d0d1a:cloud/minimal_examples/api-audio/capture.sh:cloud-run-url:5
+ffb20cf0f9c90432ea3434641fc350a4fa9d0d1a:cloud/minimal_examples/mcp-audio/record.py:cloud-run-url:12
+ffb20cf0f9c90432ea3434641fc350a4fa9d0d1a:cloud/minimal_examples/api-live-stream/stream.sh:cloud-run-url:5
+342ae9831ef2437debe2723b49e3b3aeedf9f393:cloud/minimal_examples/api-capture/capture.sh:cloud-run-url:5
+342ae9831ef2437debe2723b49e3b3aeedf9f393:cloud/minimal_examples/api-record/record.sh:cloud-run-url:5
+342ae9831ef2437debe2723b49e3b3aeedf9f393:cloud/minimal_examples/mcp-record/record.py:cloud-run-url:12
+342ae9831ef2437debe2723b49e3b3aeedf9f393:cloud/minimal_examples/mcp-capture/capture.py:cloud-run-url:12
+fd54c5b7ab4e3f77293bba16375cbbd7c34b5780:cloud/minimal_examples/mcp_test.py:cloud-run-url:29
+fd54c5b7ab4e3f77293bba16375cbbd7c34b5780:cloud/minimal_examples/test-endpoints.sh:cloud-run-url:16
+60e3de12563cb85a500aaec1dbdb96d227824ba2:connect-to-portal.md:cloud-run-url:73
+dc56d924cc4411b41d385e7219fafb0ae5a7c97b:connect-to-portal.md:cloud-run-url:9
+dc56d924cc4411b41d385e7219fafb0ae5a7c97b:connect-to-portal.md:cloud-run-url:28
+dc56d924cc4411b41d385e7219fafb0ae5a7c97b:connect-to-portal.md:cloud-run-url:50
+dc56d924cc4411b41d385e7219fafb0ae5a7c97b:connect-to-portal.md:cloud-run-url:74
+dc56d924cc4411b41d385e7219fafb0ae5a7c97b:connect-to-portal.md:cloud-run-url:97
+dc56d924cc4411b41d385e7219fafb0ae5a7c97b:connect-to-portal.md:cloud-run-url:110

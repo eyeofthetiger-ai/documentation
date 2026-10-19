@@ -124,7 +124,7 @@ def classify_person(image_path: Path, model: str) -> tuple[bool, str]:
         data = json.loads(raw)
         person = bool(data.get("person", False))
     except (json.JSONDecodeError, AttributeError):
-        log.warning("Could not parse Ollama response as JSON: %r — treating as no person", raw)
+        log.warning("Could not parse Ollama response as JSON: %r, treating as no person", raw)
         person = False
 
     return person, raw

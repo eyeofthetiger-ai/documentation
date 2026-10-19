@@ -1,0 +1,21 @@
+# Project-specific rules on top of gitleaks' defaults.
+[extend]
+useDefault = true
+
+[[rules]]
+id = "eot-api-key"
+description = "EOT portal API key"
+regex = '''eott_[A-Za-z0-9]{16,}'''
+
+[[rules]]
+id = "cloud-run-url"
+description = "Raw Cloud Run URL, use platform.eyeofthetiger.ai"
+regex = '''[a-z0-9-]+-\d{6,}\.[a-z0-9-]+\.run\.app'''
+
+[[rules]]
+id = "real-device-id"
+description = "Real test device ID, use the eot-a3f9c2d1 placeholder"
+regex = '''eot-(e777ef86|b57de8f9)'''
+
+[allowlist]
+regexes = ['''YOUR_API_KEY''']
