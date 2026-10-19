@@ -1,23 +1,25 @@
-# The app library: install, pay for, and publish apps
+# Marketplace: install, pay for, and publish apps
 
-The portal's **Apps** page is a library of apps you can add to your EOT-1
-with a couple of clicks: apps made by EyeOfTheTiger, and apps other people
-have built and published. This guide covers:
+The portal's **Marketplace** lists apps you can add to your EOT-1 with a
+couple of clicks: apps made by EyeOfTheTiger, and apps other people have
+built and published. This guide covers:
 
-1. [Installing an app from the library](#install-an-app-from-the-library)
+1. [Installing an app from the Marketplace](#install-an-app-from-the-marketplace)
 2. [Credits: how apps are paid for](#credits-how-apps-are-paid-for)
 3. [Publishing your own app](#publish-your-own-app)
 
-If you want to run code on your own EOT-1 without publishing it, you don't
-need the library: see [Apps](../local/apps/README.md) to install straight
-from a manifest.
+New to apps? [Apps](../local/apps/README.md) explains what they are and where
+they run. If you want to run code on your own EOT-1 without publishing it,
+you don't need the Marketplace: see
+[Build an app that runs on your EOT-1](../local/apps/README.md#build-an-app-that-runs-on-your-eot-1)
+to install straight from a manifest.
 
-## Install an app from the library
+## Install an app from the Marketplace
 
 You need an EyeOfTheTiger account with at least one EOT-1 added to it.
 
 1. Sign in at [platform.eyeofthetiger.ai](https://platform.eyeofthetiger.ai)
-   and click **Apps** in the top bar.
+   and click **Marketplace** in the top bar.
 2. Find the app. Each tile shows its logo, name, maker and price. To search,
    tap the magnifying glass at the top left of the list and type a name,
    maker or description.
@@ -44,7 +46,7 @@ with "Hello, world." written over it. It runs on the cheapest cloud size, so
 stop it when you're done.
 
 You can also install from an EOT-1's own page: its apps section lists the
-library, and **Buy** and **Install** work the same way there.
+Marketplace apps, and **Buy** and **Install** work the same way there.
 
 Things to know:
 
@@ -61,7 +63,7 @@ Things to know:
 
 ## Credits: how apps are paid for
 
-Everything in the library is paid for from your organisation's prepaid
+Everything in the Marketplace is paid for from your organisation's prepaid
 credits. Open them from the gear menu → **Credits**.
 
 - **Top up** with £10, £25 or £50, or type another amount (at least £5).
@@ -86,7 +88,7 @@ credits. Open them from the gear menu → **Credits**.
 
 ## Publish your own app
 
-Anyone with an account can submit an app to the library. Submitted apps run
+Anyone with an account can submit an app to the Marketplace. Submitted apps run
 **in the cloud** (on Google Cloud Run), attached to the customer's EOT-1
 through the platform's API. They can't run on the EOT-1 itself yet.
 
@@ -158,7 +160,7 @@ def token_ok(token: str | None) -> bool:
 [eyeofthetiger-ai/hello-world-app](https://github.com/eyeofthetiger-ai/hello-world-app)
 is a complete app to copy: it shows the customer's live stream with "Hello,
 world." over it, checks the token, and keeps the API key on the server. It's
-the **Hello, world - test app** in the library, and uses only Python's
+the **Hello, world - test app** in the Marketplace, and uses only Python's
 standard library.
 
 1. On GitHub, open
@@ -187,8 +189,8 @@ standard library.
 
 ### 3. Submit it
 
-1. In the portal, click **Apps**, then **Submit an app** in the intro text
-   (or go to `/apps/submit`).
+1. In the portal, click **Marketplace**, then the **Submit your own** tile
+   at the end of the apps.
 2. Fill in the form:
 
    | Field | What to enter |
@@ -235,8 +237,8 @@ status:
 | **Building** | We're building your image in an isolated environment. This takes a few minutes. |
 | **Build failed** | The `docker build` failed. The error is shown; fix it and submit again. |
 | **Awaiting review** | Built. An EyeOfTheTiger admin is reviewing it. |
-| **Publishing** | Approved, and being moved into the library. |
-| **Published** | Live in the library for every EOT-1 owner. |
+| **Publishing** | Approved, and being added to the Marketplace. |
+| **Published** | Live in the Marketplace for every EOT-1 owner. |
 | **Not approved** | Rejected. The reason is shown, and also emailed to you. |
 
 While your image builds, Claude reads (never runs) your source code and

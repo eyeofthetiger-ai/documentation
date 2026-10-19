@@ -16,7 +16,8 @@ detect motion, and trigger actions, all from your local network.
 | [Integrate with Google](integrations/integrate-with-google.md) | Connect to Google AI tools |
 | [Integrate with Ollama](integrations/integrate-with-ollama.md) | Run local models against your camera feed |
 | [Integrate with OpenClaw](integrations/integrate-with-openclaw.md) | Use EyeOfTheTiger through the OpenClaw platform |
-| [Apps](apps/README.md) | Run your own long-running program on-device or in the cloud, with events reported back |
+| [Apps](apps/README.md) | What apps are, where they run (on your EOT-1 or in the cloud), and how to build one |
+| [Marketplace](../cloud/marketplace.md) | Install ready-made apps, pay with credits, and publish your own |
 
 ## Getting Started
 
@@ -45,13 +46,13 @@ including motion detection, a daily timelapse, person-spotted notifications, and
 
 ## Apps
 
-[`apps/`](apps/README.md) covers the apps platform: your own long-running
-program on-device (built and run on your EOT-1) or in the cloud (a managed
-service per camera). Both watch the live stream and report structured events
-back, plus a full, ready-to-install minimal example in
-[`apps/test-app/`](apps/test-app/).
+An app gives your EOT-1 a job and keeps doing it, running either on the EOT-1
+itself or in the cloud. [`apps/`](apps/README.md) explains both and how to
+build an on-device app, with a ready-to-install minimal example in
+[`apps/test-app/`](apps/test-app/). To install ready-made apps or publish
+your own, see the [Marketplace](../cloud/marketplace.md).
 
-## What's new since `main`
+## Live streaming and audio
 
 - **Live stream**: `POST /live-stream/start` and `POST /live-stream/stop` on-device,
   and `POST /api/v1/cameras/:id/live-stream/start`, `POST /api/v1/cameras/:id/live-stream/stop`,
