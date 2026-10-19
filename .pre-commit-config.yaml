@@ -1,4 +1,4 @@
-# Install once per clone: pip install pre-commit && pre-commit install
+# Install once per clone: pre-commit install  (get pre-commit via: apt install pre-commit, brew install pre-commit, or pipx install pre-commit)
 # CI runs the same gitleaks scan, so skipping hooks locally won't skip the check.
 repos:
   - repo: https://github.com/gitleaks/gitleaks
