@@ -63,7 +63,10 @@ def _log(message: str) -> None:
 
 
 def _post(capture_url: str, path: str, **kwargs) -> requests.Response:
-    return requests.post(f"{capture_url.rstrip('/')}{path}", timeout=10, **kwargs)
+    # The capture server rejects POSTs without this header (CSRF guard).
+    return requests.post(
+        f"{capture_url.rstrip('/')}{path}", headers={"X-EOT-Local": "1"}, timeout=10, **kwargs
+    )
 
 
 def _set_phase(phase: str) -> None:

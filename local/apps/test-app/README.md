@@ -32,6 +32,7 @@ the API:
 tar -czf test-app-context.tar.gz -C test-app service.py requirements.txt Dockerfile .dockerignore
 
 curl -X POST http://eyeofthetiger.local/v1/apps \
+  -H 'X-EOT-Local: 1' \
   -F 'manifest={"name":"test-app","port":8101,"command":["python","service.py","--capture-url","http://127.0.0.1:80","--port","8101"]}' \
   -F 'context=@test-app-context.tar.gz'
 ```
