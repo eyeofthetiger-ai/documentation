@@ -11,7 +11,7 @@ it, depending on how much control you want and where your AI agents run.
 We recommend starting with **local**, which is free to prototype and quick to get set up.
 
 1. **Plug in your Eye of the Tiger** and wait for the **EyeOfTheTiger-Setup** Wi-Fi network to appear. The EOT-1 keeps broadcasting it after setup too, so you can always reach it, even if you move it or your Wi-Fi drops.
-2. **Connect your laptop or mobile** to the EyeOfTheTiger-Setup network using the Wi-Fi password from your order confirmation email.
+2. **Connect your laptop or mobile** to the EyeOfTheTiger-Setup network using your EOT-1's device id as the Wi-Fi password (it looks like `eot-xxxxxxxx`, and is also in your order confirmation email).
 3. **Open `eyeofthetiger.local/setup`** in your browser to select your home Wi-Fi network.
 4. **Choose an integration** to get going.
 
