@@ -154,7 +154,9 @@ curl -X POST https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/live-
   -H "x-api-key: $API_KEY"
 curl https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/live-stream \
   -H "x-api-key: $API_KEY" # → playback URL for the live stream
-# Open the playback URL in a compatible viewer and stop with POST …/live-stream/stop when done.
+# Open the playback URL in a compatible viewer. While you watch, your viewer must
+# re-fetch GET …/live-stream about every 10 seconds: the stream stops on its own
+# 30 seconds after the last fetch. Stop it sooner with POST …/live-stream/stop.
 curl -X POST https://platform.eyeofthetiger.ai/api/v1/cameras/eot-a3f9c2d1/live-stream/stop \
   -H "x-api-key: $API_KEY"
 

@@ -31,7 +31,10 @@ for _ in $(seq 1 20); do
   if body=$(curl -fsS -H "x-api-key: $API_KEY" "$API/live-stream"); then
     echo "$body" | python3 -c 'import json, sys; print(json.load(sys.stdin)["live_stream"]["webrtc_playback_url"])' > whep.txt
     echo "Saved whep.txt: $(cat whep.txt)"
-    echo "Stop it when done: curl -X POST -H \"x-api-key: \$API_KEY\" $API/live-stream/stop"
+    # The platform stops a stream 30s after the last GET .../live-stream, so a
+    # real viewer re-fetches it every ~10s while it plays.
+    echo "Nobody re-fetches the playback URL here, so the stream stops on its own in about 30 seconds."
+    echo "Stop it sooner: curl -X POST -H \"x-api-key: \$API_KEY\" $API/live-stream/stop"
     exit 0
   fi
   sleep 1
