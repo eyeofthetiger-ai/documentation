@@ -177,7 +177,7 @@ as short-lived signed download URLs.
 
 | Tool | REST equivalent | Description |
 |---|---|---|
-| `list_cameras` | `GET /api/v1/cameras` | List all your cameras with online/offline status |
+| `list_cameras` | `GET /api/v1/cameras` | List all your cameras with online/offline status. Network and USB cameras on an EOT-1 have their own ids, see [cameras.md](cameras.md) |
 | `register_camera` | `POST /api/v1/cameras` | Pair a camera: `device_id` + `device_token` (+ optional `display_name`) |
 | `get_status` | `GET …/status` | Full device picture: `camera` (`local_streaming`, `live_stream.streaming`, clip/continuous, quality) and `microphone` (`connected`, busy) |
 | `set_quality` | `POST …/quality` | Set the quality preset (`high`, `medium`, `low`; one tier for stills and clips) |
