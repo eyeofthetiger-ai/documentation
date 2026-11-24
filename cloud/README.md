@@ -23,6 +23,11 @@ port forwarding is required.
   and `?kind=audio_clip|audio_continuous` in the library. Check
   `microphone.connected` from `GET /status` first.
 
+## Network and USB cameras
+
+Run IP cameras and USB webcams alongside the EOT-1's own camera: see
+[cameras.md](cameras.md).
+
 ## More coming soon
 
 Cloud integration guides for Anthropic, OpenAI, Google, and others are in
