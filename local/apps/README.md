@@ -113,10 +113,73 @@ Installing an app takes a JSON manifest alongside the source tarball:
 | `name` | Required. Lowercase letters, digits and hyphens, up to 63 characters, starting with a letter or digit. Also the container name. |
 | `port` | Required. The port your app serves HTTP on, 1024 to 65535. |
 | `command` | Optional. Overrides the image's own `CMD`, as a list of strings. |
-| `env` | Optional. Environment variables, as string to string. |
+| `env` | Optional. Environment variables, as string to string. Values can name a camera's stream (see [Camera streams](#camera-streams)). |
 | `volumes` | Optional. A list of volume names (not paths). Each is mounted at `/data/<name>`. |
 | `description` | Optional. Shown on the Apps page, up to 500 characters. |
 | `triggers_cloud_apps` | Optional. Names of cloud apps on the same EOT-1 this app may start and stop (see [Waking a cloud app](#waking-a-cloud-app)). |
+
+### Camera streams
+
+An `env` value can name one of your EOT-1's network cameras, and your EOT-1
+fills in the address when it starts the app. `<id>` is the camera's id, `door`
+or `eot-a3f9c2d1-door`.
+
+| Reference | Filled in with |
+|---|---|
+| `{camera:<id>:url}` | The camera's main stream, with its password filled in by your EOT-1 |
+| `{camera:<id>:sub_url}` | Its low-resolution stream |
+| `{camera:<id>:recording_url}` | `http://127.0.0.1:<port>/v1/cameras/<id>/recording.ts`: the stream your EOT-1 is recording |
+
+```json
+"env": {"DOOR_RECORDING": "{camera:door:recording_url}"}
+```
+
+The manifest keeps the reference, never the password. Installing fails if the
+camera doesn't exist or has no network stream (USB webcams don't).
+
+Prefer `recording_url` when your app's results need to line up with
+recordings:
+
+- It's the same MPEG-TS stream your EOT-1 is recording: full resolution, not
+  re-encoded, no password in the URL.
+- Reading it opens no extra connection to the camera. Your app gets the very
+  packets that go into the recording.
+- It's reachable from the EOT-1 itself only. Apps run with host networking, so
+  `127.0.0.1` works.
+- It's there only while that camera is continuously recording: 409 otherwise,
+  and the stream ends when recording stops. Retry until it's back.
+- Each video packet's PTS is your EOT-1's wall clock when the packet arrived,
+  in 90 kHz units mod 2^33 (it wraps about every 26.5 hours). Get the time
+  back with `epoch = pts_s + k * 2**33 / 90000`, `k` being the integer that
+  puts it nearest the current time. That is also where the frame sits in the
+  recording, so your results line up with recordings frame for frame.
+
+With [PyAV](https://pyav.org):
+
+```python
+import os, time
+import av
+
+WRAP = 2**33 / 90000  # seconds before the PTS wraps
+
+
+def wall_clock(pts_s: float) -> float:
+    k = round((time.time() - pts_s) / WRAP)
+    return pts_s + k * WRAP
+
+
+url = os.environ["DOOR_RECORDING"]
+while True:
+    try:
+        with av.open(url) as stream:
+            for frame in stream.decode(video=0):
+                t = wall_clock(frame.time)  # Unix time of this frame
+                image = frame.to_ndarray(format="bgr24")
+                # ... run your model on image, keep t with the result
+    except av.error.FFmpegError:
+        pass  # not recording (409) or the connection dropped
+    time.sleep(5)
+```
 
 ### Install it over your local network
 
