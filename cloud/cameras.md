@@ -74,6 +74,10 @@ or the time on its picture will be wrong. Then add each camera by its RTSP addre
 ## Good to know
 
 - Several cameras can record at once and share one storage limit.
+- Continuous recording holds one connection per network camera. On-device apps
+  share it through `{camera:<id>:recording_url}` instead of opening their own,
+  so what an app sees is exactly what was recorded (see
+  [Camera streams](../local/apps/README.md#camera-streams)).
 - One camera at a time can be live streamed through the portal.
 - Only the EOT-1's own camera follows the quality setting.
 - Cameras recorded as-is (H.264 or H.265) cost little; USB webcams are encoded on the EOT-1.
